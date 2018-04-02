@@ -3,7 +3,6 @@ package DAL.Repository
 import play.api.Play
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.Future
 import slick.driver.JdbcProfile
 import slick.jdbc.PostgresProfile.api._ // Important because sql queries are transpiled wrong if used some other profile
@@ -14,20 +13,6 @@ import javax.inject._
 import DAL.Models.User
 import DAL.Traits._
 import DAL.Migrations.UserTableDef
-
-import BLL.Models.UserModel
-
-object UserForm {
-
-  val form = Form(
-    mapping(
-      "firstName" -> nonEmptyText,
-      "lastName" -> nonEmptyText,
-      "mobile" -> longNumber,
-      "email" -> email
-    )(UserModel.apply)(UserModel.unapply)
-  )
-}
 
 class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
   val users = TableQuery[UserTableDef]

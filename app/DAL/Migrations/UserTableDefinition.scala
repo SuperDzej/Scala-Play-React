@@ -11,7 +11,8 @@ class UserTableDef(tag: Tag) extends Table[User](tag, "user") {
   def lastName = column[String]("last_name")
   def mobile = column[Long]("mobile")
   def email = column[String]("email")
+  def password = column[String]("password")
 
   override def * =
-    (id, firstName, lastName, mobile, email) <>(User.tupled, User.unapply)
+    (id, firstName, lastName, mobile, email, password) <>(User.tupled, User.unapply)
 }

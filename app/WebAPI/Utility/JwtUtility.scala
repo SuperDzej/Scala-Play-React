@@ -1,20 +1,24 @@
-package utilities
+package WebApi.utilities
 
 import authentikat.jwt.{JsonWebToken, JwtClaimsSet, JwtHeader}
 
-class JwtUtility {
-  val JwtSecretKey = "dsadsadasdasd2e2d"
-  val JwtSecretAlgo = "HS256"
+import play.api.Configuration
+
+import javax.inject._
+
+class JwtUtility @Inject() (config: Configuration){
+  val jwtSecretKey = config.get[String]("jwt.secretKey")
+  val jwtSecretAlgo = config.get[String]("jwt.algorithm")
 
   def createToken(payload: String): String = {
-    val header = JwtHeader(JwtSecretAlgo)
+    val header = JwtHeader(jwtSecretAlgo)
     val claimsSet = JwtClaimsSet(payload)
 
-    JsonWebToken(header, claimsSet, JwtSecretKey)
+    JsonWebToken(header, claimsSet, jwtSecretKey)
   }
 
   def isValidToken(jwtToken: String): Boolean =
-    JsonWebToken.validate(jwtToken, JwtSecretKey)
+    JsonWebToken.validate(jwtToken, jwtSecretKey)
 
   def decodePayload(jwtToken: String): Option[String] =
     jwtToken match {
@@ -22,5 +26,3 @@ class JwtUtility {
       case _ => None
     }
 }
-
-object JwtUtility extends JwtUtility

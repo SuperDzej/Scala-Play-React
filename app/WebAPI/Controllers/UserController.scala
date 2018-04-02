@@ -27,31 +27,32 @@ class UserController @Inject()(cc: ControllerComponents, ussc: UserService)
   private val userService: UserService = ussc
   private implicit val objectWrites = Json.writes[UserModel]
   private implicit val objectReads = Json.reads[UserModel]
-  private implicit val reads = Json.format[UserModel]
+  private implicit val userReads = Json.reads[User]
+  // private implicit val reads = Json.format[UserModel]
 
   def get() = Action{ request => 
     val users: Seq[UserModel] = userService.get
     Ok(Json.toJson(users))
   }
 
-  def getWithQuery(userId: Long) = Action { request => 
+  def getById(userId: Long) = Action { request => 
     val user: Option[UserModel] = userService.getById(userId)
-    val jsonResult: JsValue = Json.toJson(user)
-    Ok(jsonResult)   
+    val userJson: JsValue = Json.toJson(user)
+    Ok(userJson)   
   }
 
   def post = Action(parse.json) { request => 
-    val json = request.body.as[UserModel]
+    val jsonUserFromBody = request.body.as[User]
 
-    val se: Future[String] = userService.add(json)
-    val result = Await.result(se,  3 seconds)
+    val addResult: Future[String] = userService.add(jsonUserFromBody)
+    val result = Await.result(addResult,  3 seconds)
     Ok(Json.toJson(result))
   }
 
   def delete(userId: Long) = Action { request =>
-    val se: Future[Int] = userService.delete(userId)
-    val result = Await.result(se,  3 seconds)
-    if(result == userId) {
+    val deletedUserF: Future[Int] = userService.delete(userId)
+    val deletedUserId = Await.result(deletedUserF,  3 seconds)
+    if(deletedUserId == userId) {
       Ok("User deleted")
     } else {
       NotFound("No user with id")

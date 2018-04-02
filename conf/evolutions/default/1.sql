@@ -6,7 +6,8 @@ CREATE TABLE "user" (
   "first_name" TEXT NOT NULL,
   "last_name" TEXT NOT NULL,
   "mobile" BIGINT NOT NULL,
-  "email" TEXT NOT NULL
+  "email" TEXT NOT NULL,
+  "password" TEXT NOT NULL
 )
 
 # --- !Downs

@@ -7,13 +7,19 @@ GET     /                               controllers.FrontendController.index()
 
 # An example route (Prefix all API routes with apiPrefix defined in application.conf)
 
-GET     /api/users/:userId              controllers.UserController.getWithQuery(userId: Long)
-
 GET    /api/users                       controllers.UserController.get
 
 POST    /api/users                      controllers.UserController.post
 
+GET     /api/users/:userId              controllers.UserController.getById(userId: Long)
+
 DELETE  /api/users/:userId              controllers.UserController.delete(userId: Long)
+
+# Account related routes
+
+POST     /token                          controllers.AccountController.generateToken
+
+GET     /account                        controllers.AccountController.index
 
 # Serve static assets under public directory
 GET     /*file                      controllers.FrontendController.assetOrDefault(file)
