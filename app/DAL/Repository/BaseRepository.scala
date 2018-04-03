@@ -1,22 +1,20 @@
 package DAL.Repository
 
+import slick.dbio.{DBIOAction, NoStream}
+import slick.jdbc.JdbcProfile
+import slick.jdbc.PostgresProfile.api._
 
-import javax.inject._
-
-import play.api.Play
-// import play.api.db.slick.DatabaseConfigProvider
-import slick.driver.JdbcProfile
-import slick.driver.PostgresDriver.api._
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import DAL.Traits._
+import scala.concurrent.Future
 
 class BaseRepository () {
   // We get config by name from application.config where db url is specified
-  val db = Database.forConfig("db")
+  val db = Database.forConfig("database")
   
-  def getDatabaseConnection(): JdbcProfile#Backend#Database = {
-    println("Got db: " + db)
+  def getDatabaseConnection: JdbcProfile#Backend#Database = {
     db
+  }
+
+  def runCommand[R](a: DBIOAction[R, NoStream, Nothing]): Future[R] = {
+    db.run(a)
   }
 }

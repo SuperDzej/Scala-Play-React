@@ -1,7 +1,7 @@
-package controllers
+package WebApi.Controllers
 
+import controllers.Assets
 import javax.inject._
-
 import play.api.Configuration
 import play.api.http.HttpErrorHandler
 import play.api.mvc._

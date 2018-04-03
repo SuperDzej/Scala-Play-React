@@ -15,5 +15,7 @@ trait IUserRepository {
 
   def getById(id: Long): Future[Option[User]]
 
+  def getByEmail(email: String): Future[Option[User]]
+
   def get: Future[Seq[User]]
 }

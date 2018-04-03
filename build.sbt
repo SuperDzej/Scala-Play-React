@@ -19,5 +19,6 @@ libraryDependencies += "com.typesafe.slick" %% "slick-hikaricp" % "3.2.3"
 libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.6.4"
 libraryDependencies += "com.jason-goodwin" %% "authentikat-jwt" % "0.4.5"
 libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
+libraryDependencies += "be.objectify" %% "deadbolt-scala" % "2.6.0"
 // libraryDependencies += evolutions
 

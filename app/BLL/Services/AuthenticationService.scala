@@ -1,25 +1,39 @@
 package BLL.Services
 
+import DAL.Models.User
 import javax.inject._
-
-import play.api.libs.json.Json
-import play.api.data.Form
-import play.api.data.Forms._
-
-import scala.concurrent._
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-
-import BLL.Models._
-
-import DAL.Repository._
-import DAL.Models._
 import DAL.Traits._
-
+import WebApi.Models.{JwtToken, UserCredentials, UserJwtPayload}
 import org.mindrot.jbcrypt.BCrypt
+import play.api.libs.json.{JsValue, Json, Reads, Writes}
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 
 class AuthenticationService @Inject()(ussr: IUserRepository) {
   private val userRepository: IUserRepository = ussr
+  private implicit val jwtPayloadWrites: Writes[UserJwtPayload] = Json.writes[UserJwtPayload]
+
+  def checkUserCredentials(email: String, password: String): Boolean = {
+    val userF: Future[Option[User]] = userRepository.getByEmail(email)
+    val user: Option[User] = Await.result(userF, 3.seconds)
+    user match  {
+      case Some(dbUser) => validatePassword(password, dbUser.password)
+      case None => false
+    }
+  }
+
+  def generateTokenPayload(credentials: UserCredentials): Option[String] = {
+    val userAuthorized: Boolean = checkUserCredentials(credentials.email, credentials.password)
+    if (userAuthorized) {
+      val userF: Future[Option[User]] = ussr.getByEmail(credentials.email)
+      val user: Option[User] = Await.result(userF, 3.second)
+      user match  {
+        case Some(sUser) => Some(Json.toJson(UserJwtPayload(sUser.email, sUser.id, "Customer")).toString)
+        case None => None
+      }
+    } else None
+  }
 
   def validatePassword(password: String, passwordHash: String): Boolean = {
     BCrypt.checkpw(password, passwordHash)
@@ -28,5 +42,4 @@ class AuthenticationService @Inject()(ussr: IUserRepository) {
   def hashPassword(password: String): String = {
     BCrypt.hashpw(password, BCrypt.gensalt())
   }
-
 }
