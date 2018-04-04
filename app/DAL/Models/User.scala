@@ -1,10 +1,11 @@
 package DAL.Models
 
 
-case class User(id: Long, firstName: String, lastName: String, mobile: Long, email: String, password: String)
+case class User(id: Long, firstName: String, lastName: String, mobile: String, email: String,
+                username: String, isVerified: Boolean, isDisabled: Boolean, password: String)
 
 /*
-class Note(_name: String, _duration: String, _octave: Int) extends Serializable {
+class User(_name: String, _duration: String, _octave: Int) extends Serializable {
 
   // Constructor parameters are promoted to members
   val name = _name

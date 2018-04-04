@@ -13,6 +13,8 @@ trait IUserRepository {
 
   def delete(id: Long): Future[Int]
 
+  def update(user: User) : Future[String]
+
   def getById(id: Long): Future[Option[User]]
 
   def getByEmail(email: String): Future[Option[User]]

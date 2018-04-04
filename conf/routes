@@ -16,7 +16,6 @@ GET     /api/users/:userId              WebApi.Controllers.UserController.getByI
 DELETE  /api/users/:userId              WebApi.Controllers.UserController.delete(userId: Long)
 
 # Account related routes
-
 POST     /token                         WebApi.Controllers.AccountController.generateToken
 
 GET     /account                        WebApi.Controllers.AccountController.index

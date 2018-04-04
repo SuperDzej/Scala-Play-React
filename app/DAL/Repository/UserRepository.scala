@@ -7,10 +7,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
 import DAL.Models.User
 import DAL.Traits._
-import DAL.Migrations.UserTableDef
+import DAL.Migrations.UserTable
 
 class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
-  val users = TableQuery[UserTableDef]
+  val users = TableQuery[UserTable]
 
   def add(user: User): Future[String] = {
 
@@ -21,6 +21,12 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
 
   def delete(id: Long): Future[Int] = {
     runCommand(users.filter(_.id === id).delete)
+  }
+
+  def update(user: User) : Future[String] = {
+    runCommand(users.update(user)).map(res => "User successfully updated").recover {
+      case ex : Exception => ex.getCause.getMessage
+    }
   }
 
   def getById(id: Long): Future[Option[User]] = {

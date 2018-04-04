@@ -19,8 +19,9 @@ object UserForm {
       "id" -> longNumber,
       "firstName" -> nonEmptyText,
       "lastName" -> nonEmptyText,
-      "mobile" -> longNumber,
+      "mobile" -> nonEmptyText,
       "email" -> email,
+      "username" -> nonEmptyText,
       "password" -> optional(text)
     )(UserModel.apply)(UserModel.unapply)
   )
@@ -31,7 +32,8 @@ class UserService @Inject()(ussr: IUserRepository, authService: AuthenticationSe
   
   def add(user: User): Future[String] = {
     val hashedPassword = authService.hashPassword(user.password)
-    val dbUser = User(0L, user.firstName, user.lastName, user.mobile, user.email, hashedPassword)
+    val dbUser = User(0L, user.firstName, user.lastName, user.mobile, user.email, user.username,
+      isVerified = false, isDisabled = false, hashedPassword)
     userRepository.add(dbUser)
   }
 
@@ -44,7 +46,7 @@ class UserService @Inject()(ussr: IUserRepository, authService: AuthenticationSe
 
     opUser match {
       case Some(dbUser) =>
-        val user:Option[UserModel] = Some(UserModel(dbUser.id, dbUser.firstName, dbUser.lastName, dbUser.mobile, dbUser.email, None))
+        val user:Option[UserModel] = Some(UserModel(dbUser.id, dbUser.firstName, dbUser.lastName, dbUser.mobile, dbUser.email, dbUser.username, None))
         user
       case None => None
     }
@@ -54,7 +56,7 @@ class UserService @Inject()(ussr: IUserRepository, authService: AuthenticationSe
   def get: Seq[UserModel] = {
     val dbUsers = Await.result(userRepository.get,  3.seconds)
 
-    val users = dbUsers.map(sUser => UserModel(sUser.id, sUser.firstName, sUser.lastName, sUser.mobile, sUser.email, None))
+    val users = dbUsers.map(user => UserModel(user.id, user.firstName, user.lastName, user.mobile, user.email, user.username, None))
     users
   }
 }

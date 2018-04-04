@@ -1,3 +1,4 @@
 package BLL.Models
 
-case class UserModel(id: Long, firstName: String, lastName: String, mobile: Long, email: String, password: Option[String])
+case class UserModel(id: Long, firstName: String, lastName: String, mobile: String,
+                     email: String, username: String, password: Option[String])

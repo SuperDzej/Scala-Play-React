@@ -7,6 +7,9 @@ CREATE TABLE "user" (
   "last_name" TEXT NOT NULL,
   "mobile" BIGINT NOT NULL,
   "email" TEXT NOT NULL,
+  "username" TEXT NOT NULL,
+  "isVerified" BIT NOT NULL,
+  "isDisabled" BIT NOT NULL,
   "password" TEXT NOT NULL
 )
 

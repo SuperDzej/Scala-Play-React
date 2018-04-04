@@ -22,12 +22,12 @@ class UserController @Inject()(cc: ControllerComponents, ussc: UserService)
   private implicit val objectReads: Reads[UserModel] = Json.reads[UserModel]
   private implicit val userReads: Reads[User] = Json.reads[User]
 
-  def get() = Action{ request => 
+  def get() = Action {
     val users: Seq[UserModel] = userService.get
     Ok(Json.toJson(users))
   }
 
-  def getById(userId: Long) = Action { request => 
+  def getById(userId: Long) = Action { _ =>
     val user: Option[UserModel] = userService.getById(userId)
     val userJson: JsValue = Json.toJson(user)
     Ok(userJson)   
