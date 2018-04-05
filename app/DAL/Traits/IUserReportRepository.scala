@@ -5,7 +5,7 @@ import DAL.Models.UserReport
 import scala.concurrent.Future
 
 trait IUserReportRepository {
-  def add(user: UserReport): Future[String]
+  def create(user: UserReport): Future[String]
 
   def delete(id: Long): Future[Int]
 

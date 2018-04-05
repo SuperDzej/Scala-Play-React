@@ -12,9 +12,8 @@ import DAL.Migrations.UserInterestTable
 class UserInterestRepository @Inject()() extends BaseRepository() with IUserInterestRepository {
   val users = TableQuery[UserInterestTable]
 
-  def add(user: UserInterest): Future[String] = {
-
-    runCommand(users += user).map(res => "User detail successfully added").recover {
+  def create(user: UserInterest): Future[String] = {
+    runCommand(users += user).map(_ => "User interest successfully added").recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
@@ -24,7 +23,7 @@ class UserInterestRepository @Inject()() extends BaseRepository() with IUserInte
   }
 
   def update(user: UserInterest) : Future[String] = {
-    runCommand(users.update(user)).map(res => "User detail successfully updated").recover {
+    runCommand(users.update(user)).map(_ => "User interest successfully updated").recover {
       case ex : Exception => ex.getCause.getMessage
     }
   }

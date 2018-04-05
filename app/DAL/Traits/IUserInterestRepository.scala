@@ -5,7 +5,7 @@ import DAL.Models.UserInterest
 import scala.concurrent.Future
 
 trait IUserInterestRepository {
-  def add(user: UserInterest): Future[String]
+  def create(user: UserInterest): Future[String]
 
   def delete(id: Long): Future[Int]
 

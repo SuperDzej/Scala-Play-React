@@ -12,9 +12,8 @@ import DAL.Migrations.UserReportTable
 class UserReportRepository @Inject()() extends BaseRepository() with IUserReportRepository {
   val users = TableQuery[UserReportTable]
 
-  def add(user: UserReport): Future[String] = {
-
-    runCommand(users += user).map(res => "User detail successfully added").recover {
+  def create(user: UserReport): Future[String] = {
+    runCommand(users += user).map(_ => "User report successfully added").recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
@@ -24,7 +23,7 @@ class UserReportRepository @Inject()() extends BaseRepository() with IUserReport
   }
 
   def update(user: UserReport) : Future[String] = {
-    runCommand(users.update(user)).map(res => "User detail successfully updated").recover {
+    runCommand(users.update(user)).map(_ => "User report successfully updated").recover {
       case ex : Exception => ex.getCause.getMessage
     }
   }

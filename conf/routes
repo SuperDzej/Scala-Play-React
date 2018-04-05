@@ -5,20 +5,24 @@
 # Serve index page from public directory
 GET     /                               WebApi.Controllers.FrontendController.index()
 
-# An example route (Prefix all API routes with apiPrefix defined in application.conf)
+# User related routes
+GET         /api/users                      WebApi.Controllers.UserController.get
 
-GET    /api/users                       WebApi.Controllers.UserController.get
+POST        /api/users                      WebApi.Controllers.UserController.post
 
-POST    /api/users                      WebApi.Controllers.UserController.post
+GET         /api/users/:userId              WebApi.Controllers.UserController.getById(userId: Long)
 
-GET     /api/users/:userId              WebApi.Controllers.UserController.getById(userId: Long)
+DELETE      /api/users/:userId              WebApi.Controllers.UserController.delete(userId: Long)
 
-DELETE  /api/users/:userId              WebApi.Controllers.UserController.delete(userId: Long)
+POST        /api/users/:userId/details      WebApi.Controllers.UserController.postDetails(userId: Long)
 
 # Account related routes
-POST     /token                         WebApi.Controllers.AccountController.generateToken
+POST        /token                          WebApi.Controllers.AccountController.generateToken
 
-GET     /account                        WebApi.Controllers.AccountController.index
+GET         /account                        WebApi.Controllers.AccountController.index
+
+# Report related routes
+POST        /report                         WebApi.Controllers.ReportController.report
 
 # Serve static assets under public directory
 GET     /*file                          WebApi.Controllers.FrontendController.assetOrDefault(file)

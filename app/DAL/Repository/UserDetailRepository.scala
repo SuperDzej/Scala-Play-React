@@ -5,16 +5,16 @@ import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
-import DAL.Models.{User, UserDetail}
+import DAL.Models.UserDetail
 import DAL.Traits._
 import DAL.Migrations.UserDetailTable
 
 class UserDetailRepository @Inject()() extends BaseRepository() with IUserDetailRepository {
   val users = TableQuery[UserDetailTable]
 
-  def add(user: UserDetail): Future[String] = {
+  def create(user: UserDetail): Future[String] = {
 
-    runCommand(users += user).map(res => "User detail successfully added").recover {
+    runCommand(users += user).map(_ => "User detail successfully added").recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
@@ -24,7 +24,7 @@ class UserDetailRepository @Inject()() extends BaseRepository() with IUserDetail
   }
 
   def update(user: UserDetail) : Future[String] = {
-    runCommand(users.update(user)).map(res => "User detail successfully updated").recover {
+    runCommand(users.update(user)).map(_ => "User detail successfully updated").recover {
       case ex : Exception => ex.getCause.getMessage
     }
   }

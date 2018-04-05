@@ -21,8 +21,9 @@ class UserController @Inject()(cc: ControllerComponents, ussc: UserService)
   private implicit val objectWrites: Writes[UserModel] = Json.writes[UserModel]
   private implicit val objectReads: Reads[UserModel] = Json.reads[UserModel]
   private implicit val userReads: Reads[User] = Json.reads[User]
+  private implicit val userDetailReads: Reads[UserDetail] = Json.reads[UserDetail]
 
-  def get() = Action {
+  def get = Action {
     val users: Seq[UserModel] = userService.get
     Ok(Json.toJson(users))
   }
@@ -30,20 +31,25 @@ class UserController @Inject()(cc: ControllerComponents, ussc: UserService)
   def getById(userId: Long) = Action { _ =>
     val user: Option[UserModel] = userService.getById(userId)
     val userJson: JsValue = Json.toJson(user)
-    Ok(userJson)   
+    Ok(userJson)
   }
 
   def post : Action[JsValue] = Action(parse.json) { request =>
-    val jsonUserFromBody = request.body.as[User]
+    val jsonUserFromBody = request.body.as[UserModel]
 
-    val addResult: Future[String] = userService.add(jsonUserFromBody)
-    val result = Await.result(addResult,  3.seconds)
-    Ok(Json.toJson(result))
+    val addResult: String = userService.create(jsonUserFromBody)
+    Ok(Json.toJson(addResult))
   }
 
-  def delete(userId: Long) = Action { request =>
-    val deletedUserF: Future[Int] = userService.delete(userId)
-    val deletedUserId = Await.result(deletedUserF,  3.seconds)
+  def postDetails(userId: Long) : Action[JsValue] = Action(parse.json) { request =>
+    val jsonUserDetailFromBody = request.body.as[UserModel]
+
+    println(jsonUserDetailFromBody)
+    Ok(Json.toJson("se" + userId))
+  }
+
+  def delete(userId: Long) = Action {
+    val deletedUserId: Int = userService.delete(userId)
     if(deletedUserId == userId) {
       Ok("User deleted")
     } else {
