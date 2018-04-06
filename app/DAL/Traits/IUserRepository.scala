@@ -9,11 +9,11 @@ import scala.concurrent.Future
 
 @ImplementedBy(classOf[UserRepository])
 trait IUserRepository {
-  def create(user: User): Future[OperationResult]
+  def create(user: User): Future[OperationResult[User]]
 
   def delete(id: Long): Future[Int]
 
-  def update(user: User) : Future[OperationResult]
+  def update(user: User) : Future[OperationResult[User]]
 
   def getById(id: Long): Future[Option[User]]
 

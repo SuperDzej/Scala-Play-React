@@ -11,11 +11,14 @@ class UserTable(tag: Tag) extends Table[User](tag, "user") {
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
   def firstName = column[String]("first_name")
   def lastName = column[String]("last_name")
-  def email = column[String]("email")
-  def username = column[String]("username")
-  def isVerified = column[Short]("isVerified")
-  def isDisabled = column[Short]("isDisabled")
+  def email = column[String]("email", O.SqlType("VARCHAR(50)"))
+  def username = column[String]("username", O.SqlType("VARCHAR(50)"))
+  def isVerified = column[Boolean]("isVerified")
+  def isDisabled = column[Boolean]("isDisabled")
   def password = column[String]("password")
+
+  def idxUsername = index("idx_username", username, unique = true)
+  def idxEmail = index("idx_email", email, unique = true)
 
   override def * =
     (id, firstName, lastName, email, username, isVerified, isDisabled, password) <>(User.tupled, User.unapply)

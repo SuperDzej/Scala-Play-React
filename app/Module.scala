@@ -16,9 +16,11 @@ import DAL.Traits._
  */
 class Module(environment: Environment, configuration: Configuration) extends AbstractModule {
 
-  override def configure() = {
+  override def configure():Unit = {
 
     bind(classOf[IUserRepository]).to(classOf[UserRepository])
+    bind(classOf[IUserDetailRepository]).to(classOf[UserDetailRepository])
+    bind(classOf[IUserReportRepository]).to(classOf[UserReportRepository])
   }
 
 }

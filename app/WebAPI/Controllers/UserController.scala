@@ -1,15 +1,8 @@
 package WebApi.Controllers
 
 import javax.inject._
-
 import play.api.libs.json._
 import play.api.mvc._
-
-import scala.concurrent._
-import scala.concurrent.duration._
-
-import DAL.Models._
-
 import BLL.Models._
 import BLL.Services._
 
@@ -18,10 +11,10 @@ class UserController @Inject()(cc: ControllerComponents, ussc: UserService)
   extends AbstractController(cc) {
 
   private val userService: UserService = ussc
-  private implicit val objectWrites: Writes[UserModel] = Json.writes[UserModel]
-  private implicit val objectReads: Reads[UserModel] = Json.reads[UserModel]
-  private implicit val userReads: Reads[User] = Json.reads[User]
-  private implicit val userDetailReads: Reads[UserDetail] = Json.reads[UserDetail]
+  private implicit val userModelWrites: Writes[UserModel] = Json.writes[UserModel]
+  private implicit val userModelReads: Reads[UserModel] = Json.reads[UserModel]
+  private implicit val userDetailModelReads: Reads[UserDetailModel] = Json.reads[UserDetailModel]
+  private implicit val userDetailModelWrites: Writes[UserDetailModel] = Json.writes[UserDetailModel]
 
   def get = Action {
     val users: Seq[UserModel] = userService.get
@@ -34,18 +27,19 @@ class UserController @Inject()(cc: ControllerComponents, ussc: UserService)
     Ok(userJson)
   }
 
-  def post : Action[JsValue] = Action(parse.json) { request =>
+  def post: Action[JsValue] = Action(parse.json) { request =>
     val jsonUserFromBody = request.body.as[UserModel]
 
     val addResult: String = userService.create(jsonUserFromBody)
     Ok(Json.toJson(addResult))
   }
 
-  def postDetails(userId: Long) : Action[JsValue] = Action(parse.json) { request =>
-    val jsonUserDetailFromBody = request.body.as[UserModel]
-
+  def updateDetails(userId: Long): Action[JsValue] = Action(parse.json) { request =>
+    val jsonUserDetailFromBody = request.body.as[UserDetailModel]
     println(jsonUserDetailFromBody)
-    Ok(Json.toJson("se" + userId))
+
+    val addResult = userService.updateDetails(userId, jsonUserDetailFromBody)
+    Ok(Json.toJson(addResult))
   }
 
   def delete(userId: Long) = Action {

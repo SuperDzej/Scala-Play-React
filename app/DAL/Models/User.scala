@@ -1,7 +1,7 @@
 package DAL.Models
 
 case class User(id: Long, firstName: String, lastName: String, email: String,
-                username: String, isVerified: Short, isDisabled: Short, password: String)
+                username: String, isVerified: Boolean, isDisabled: Boolean, password: String)
 
 /*
 class User(_name: String, _duration: String, _octave: Int) extends Serializable {

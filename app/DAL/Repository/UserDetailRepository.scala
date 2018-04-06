@@ -1,5 +1,7 @@
 package DAL.Repository
 
+import DAL.Helpers.OperationResult
+
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 
@@ -12,10 +14,11 @@ import DAL.Migrations.UserDetailTable
 class UserDetailRepository @Inject()() extends BaseRepository() with IUserDetailRepository {
   val users = TableQuery[UserDetailTable]
 
-  def create(user: UserDetail): Future[String] = {
-
-    runCommand(users += user).map(_ => "User detail successfully added").recover {
-      case ex: Exception => ex.getCause.getMessage
+  def create(user: UserDetail): Future[OperationResult[UserDetail]] = {
+    runCommand(users += user)
+      .map(_ => OperationResult[UserDetail](isSuccess = true, "User detail successfully added", operationObject = Some(user)))
+      .recover {
+        case ex: Exception => OperationResult[UserDetail](isSuccess = false, ex.getMessage, operationObject = None)
     }
   }
 
@@ -23,9 +26,11 @@ class UserDetailRepository @Inject()() extends BaseRepository() with IUserDetail
     runCommand(users.filter(_.id === id).delete)
   }
 
-  def update(user: UserDetail) : Future[String] = {
-    runCommand(users.update(user)).map(_ => "User detail successfully updated").recover {
-      case ex : Exception => ex.getCause.getMessage
+  def update(user: UserDetail) : Future[OperationResult[UserDetail]] = {
+    runCommand(users.update(user))
+      .map(_ => OperationResult(isSuccess = false, "User detail successfully updated", operationObject = Some(user)))
+      .recover {
+        case ex : Exception => OperationResult(isSuccess = false, ex.getMessage, operationObject = None)
     }
   }
 

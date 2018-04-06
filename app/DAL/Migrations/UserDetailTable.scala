@@ -15,14 +15,12 @@ class UserDetailTable (tag: Tag) extends Table[UserDetail](tag, "user_detail") {
   def skin = column[String]("skin")
   def hair = column[String]("hair")
   def gender = column[String]("gender")
-  def birthYear = column[Short]("birth_year")
-  def birthMonth = column[Short]("birth_month")
-  def birthDay = column[Short]("birth_day")
+  def age = column[Short]("age")
 
   def userId = column[Long]("userId")
   def user = foreignKey("user_detail_userId_fkey", userId, users)(_.id)
 
   override def * =
     (id, description, country, religion, height, weight, skin, hair,
-      gender,birthYear, birthMonth, birthDay, userId) <>(UserDetail.tupled, UserDetail.unapply)
+      gender,age, userId) <>(UserDetail.tupled, UserDetail.unapply)
 }

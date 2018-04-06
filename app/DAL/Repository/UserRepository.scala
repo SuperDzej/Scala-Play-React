@@ -14,13 +14,12 @@ import DAL.Migrations.UserTable
 class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
   val users = TableQuery[UserTable]
 
-  def create(user: User): Future[OperationResult] = {
+  def create(user: User): Future[OperationResult[User]] = {
     println(users += user)
     runCommand(users += user)
-      .map(_ => OperationResult(isSuccess = true, "User successfully added"))
+      .map(_ => OperationResult[User](isSuccess = true, "User successfully added", None))
       .recover {
-
-        case ex: Exception => println(ex);OperationResult(isSuccess = false, ex.getCause.getMessage)
+        case ex: Exception => OperationResult[User](isSuccess = false, ex.getMessage, None)
     }
   }
 
@@ -28,11 +27,11 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
     runCommand(users.filter(_.id === id).delete)
   }
 
-  def update(user: User) : Future[OperationResult] = {
+  def update(user: User) : Future[OperationResult[User]] = {
     runCommand(users.update(user))
-      .map(_ => OperationResult(isSuccess = true, "User successfully updated"))
+      .map(_ => OperationResult[User](isSuccess = true, "User successfully updated", None))
       .recover {
-        case ex : Exception => OperationResult(isSuccess = false, ex.getCause.getMessage)
+        case ex : Exception => OperationResult[User](isSuccess = false, ex.getMessage, None)
     }
   }
 
@@ -42,6 +41,10 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
 
   def getByEmail(email: String): Future[Option[User]] = {
     runCommand(users.filter(_.email === email).result).map(_.headOption)
+  }
+
+  def getWithOffsetAndLimit(offset: Int, limit: Int): Future[Seq[User]] = {
+    runCommand(users.drop(offset).take(limit).result)
   }
 
   def get: Future[Seq[User]] = {

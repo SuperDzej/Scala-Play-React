@@ -2,4 +2,4 @@ package DAL.Models
 
 case class UserDetail (id: Long, description: String, country: String, religion:String,
                        height: Double, weight: Double, skin: String, hair: String, gender: String,
-                       birthYear: Short, birthMonth: Short, birthDay: Short, userId: Long)
+                       age: Short, userId: Long)

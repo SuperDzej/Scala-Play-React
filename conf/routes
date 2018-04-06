@@ -14,7 +14,7 @@ GET         /api/users/:userId              WebApi.Controllers.UserController.ge
 
 DELETE      /api/users/:userId              WebApi.Controllers.UserController.delete(userId: Long)
 
-POST        /api/users/:userId/details      WebApi.Controllers.UserController.postDetails(userId: Long)
+PUT        /api/users/:userId/details      WebApi.Controllers.UserController.updateDetails(userId: Long)
 
 # Account related routes
 POST        /token                          WebApi.Controllers.AccountController.generateToken
