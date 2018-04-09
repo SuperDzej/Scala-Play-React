@@ -15,6 +15,9 @@ class BaseRepository () {
   }
 
   def runCommand[R](command: DBIOAction[R, NoStream, Nothing]): Future[R] = {
-    db.run(command)
+    val db = Database.forConfig("databaseUrl")
+    try{
+      db.run(command)
+    } finally db.close()
   }
 }

@@ -12,33 +12,39 @@ import DAL.Traits._
 import DAL.Migrations.UserInterestTable
 
 class UserInterestRepository @Inject()() extends BaseRepository() with IUserInterestRepository {
-  val users = TableQuery[UserInterestTable]
+  val usersInterests = TableQuery[UserInterestTable]
 
   def create(user: UserInterest): Future[OperationResult[UserInterest]] = {
-    runCommand(users += user)
-      .map(_ => OperationResult[UserInterest](isSuccess = false, "User interest successfully added", Some(user)))
+    runCommand(usersInterests += user)
+      .map(_ => OperationResult[UserInterest](isSuccess = true, "User interest successfully added", Some(user)))
       .recover {
       case ex: Exception => OperationResult[UserInterest](isSuccess = false, ex.getMessage, None)
     }
   }
 
   def delete(id: Long): Future[Int] = {
-    runCommand(users.filter(_.id === id).delete)
+    runCommand(usersInterests.filter(_.id === id).delete)
   }
 
   def update(user: UserInterest) : Future[OperationResult[UserInterest]] = {
-    runCommand(users.update(user))
-      .map(_ => OperationResult[UserInterest](isSuccess = false, "User interest successfully updated", Some(user)))
+    runCommand(usersInterests.update(user))
+      .map(updateCount => {
+        if (updateCount <= 0) {
+          OperationResult(isSuccess = false, "User interests not updated", operationObject = Some(user))
+        } else {
+          OperationResult(isSuccess = true, "User interests successfully updated", operationObject = Some(user))
+        }
+      })
       .recover {
       case ex : Exception => OperationResult[UserInterest](isSuccess = false, ex.getMessage, None)
     }
   }
 
   def getById(id: Long): Future[Option[UserInterest]] = {
-    runCommand(users.filter(_.id === id).result).map(_.headOption)
+    runCommand(usersInterests.filter(_.id === id).result).map(_.headOption)
   }
 
   def get: Future[Seq[UserInterest]] = {
-    runCommand(users.result)
+    runCommand(usersInterests.result)
   }
 }

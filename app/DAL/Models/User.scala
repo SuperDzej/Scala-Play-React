@@ -1,6 +1,6 @@
 package DAL.Models
 
-case class User(id: Long, firstName: String, lastName: String, email: String,
+case class User(var id: Long, firstName: String, lastName: String, email: String,
                 username: String, isVerified: Boolean, isDisabled: Boolean, password: String)
 
 /*

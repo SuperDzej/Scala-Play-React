@@ -5,16 +5,17 @@ import play.api.libs.json._
 import play.api.mvc._
 import BLL.Models._
 import BLL.Services._
+import DAL.Repository.UserDetailRepository
 
 @Singleton
-class UserController @Inject()(cc: ControllerComponents, ussc: UserService) 
+class UserController @Inject()(cc: ControllerComponents, ussc: UserService, userDetailRepository: UserDetailRepository)
   extends AbstractController(cc) {
 
   private val userService: UserService = ussc
-  private implicit val userModelWrites: Writes[UserModel] = Json.writes[UserModel]
-  private implicit val userModelReads: Reads[UserModel] = Json.reads[UserModel]
   private implicit val userDetailModelReads: Reads[UserDetailModel] = Json.reads[UserDetailModel]
   private implicit val userDetailModelWrites: Writes[UserDetailModel] = Json.writes[UserDetailModel]
+  private implicit val userModelWrites: Writes[UserModel] = Json.writes[UserModel]
+  private implicit val userModelReads: Reads[UserModel] = Json.reads[UserModel]
 
   def get = Action {
     val users: Seq[UserModel] = userService.get
@@ -23,8 +24,10 @@ class UserController @Inject()(cc: ControllerComponents, ussc: UserService)
 
   def getById(userId: Long) = Action { _ =>
     val user: Option[UserModel] = userService.getById(userId)
-    val userJson: JsValue = Json.toJson(user)
-    Ok(userJson)
+    user match {
+      case userM: Some[UserModel] => println(userM); Ok(Json.toJson(userM))
+      case None => NotFound
+    }
   }
 
   def post: Action[JsValue] = Action(parse.json) { request =>
@@ -47,7 +50,7 @@ class UserController @Inject()(cc: ControllerComponents, ussc: UserService)
     if(deletedUserId == userId) {
       Ok("User deleted")
     } else {
-      NotFound("No user with id")
+      NotFound("No user with id for deletion")
     }
   }
 }

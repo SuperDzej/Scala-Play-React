@@ -14,5 +14,9 @@ trait IUserDetailRepository {
 
   def getById(id: Long): Future[Option[UserDetail]]
 
+  def getByUserId(userId: Long): Future[Option[UserDetail]]
+
+  def getByUserIds(userIds: Seq[Long]): Future[Seq[UserDetail]]
+
   def get: Future[Seq[UserDetail]]
 }

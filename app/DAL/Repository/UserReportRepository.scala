@@ -16,7 +16,7 @@ class UserReportRepository @Inject()() extends BaseRepository() with IUserReport
 
   def create(user: UserReport): Future[OperationResult[UserReport]] = {
     runCommand(users += user)
-      .map(_ => OperationResult[UserReport](isSuccess = false, "User report successfully added", None))
+      .map(_ => OperationResult[UserReport](isSuccess = true, "User report successfully added", None))
       .recover {
       case ex: Exception => OperationResult[UserReport](isSuccess = false, ex.getMessage, None)
     }
@@ -28,7 +28,13 @@ class UserReportRepository @Inject()() extends BaseRepository() with IUserReport
 
   def update(user: UserReport) : Future[OperationResult[UserReport]] = {
     runCommand(users.update(user))
-      .map(_ => OperationResult[UserReport](isSuccess = false, "User report successfully updated", None))
+      .map(updateCount => {
+        if (updateCount <= 0) {
+          OperationResult(isSuccess = false, "User report not updated", operationObject = Some(user))
+        } else {
+          OperationResult(isSuccess = true, "User report successfully updated", operationObject = Some(user))
+        }
+      })
       .recover {
       case ex : Exception => OperationResult[UserReport](isSuccess = false, ex.getMessage, None)
     }

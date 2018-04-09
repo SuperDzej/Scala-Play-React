@@ -7,20 +7,22 @@ import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
-import DAL.Models.User
+import DAL.Models.{User, UserDetail}
 import DAL.Traits._
-import DAL.Migrations.UserTable
+import DAL.Migrations.{UserDetailTable, UserTable}
 
 class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
   val users = TableQuery[UserTable]
+  val usersDetails = TableQuery[UserDetailTable]
 
   def create(user: User): Future[OperationResult[User]] = {
-    println(users += user)
-    runCommand(users += user)
-      .map(_ => OperationResult[User](isSuccess = true, "User successfully added", None))
-      .recover {
+    val userIdQuery = (users returning users.map(_.id)) += user
+    runCommand(userIdQuery).map(userId => {
+      user.id = userId
+      OperationResult[User](isSuccess = true, "User successfully created", Some(user))
+    }).recover {
         case ex: Exception => OperationResult[User](isSuccess = false, ex.getMessage, None)
-    }
+      }
   }
 
   def delete(id: Long): Future[Int] = {
@@ -29,7 +31,13 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
 
   def update(user: User) : Future[OperationResult[User]] = {
     runCommand(users.update(user))
-      .map(_ => OperationResult[User](isSuccess = true, "User successfully updated", None))
+      .map(updateCount => {
+        if (updateCount <= 0) {
+          OperationResult(isSuccess = false, "User not updated", operationObject = Some(user))
+        } else {
+          OperationResult(isSuccess = true, "User successfully updated", operationObject = Some(user))
+        }
+      })
       .recover {
         case ex : Exception => OperationResult[User](isSuccess = false, ex.getMessage, None)
     }
@@ -47,7 +55,18 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
     runCommand(users.drop(offset).take(limit).result)
   }
 
+  def getWithDetails: Future[Seq[(User, UserDetail)]] = {
+    val innerJoin = (for {
+      (c, s) <- users join usersDetails on (_.id === _.userId)
+    } yield (c, s)).result
+    runCommand(innerJoin)
+  }
+
   def get: Future[Seq[User]] = {
+    val innerJoin = (for {
+      (c, s) <- users join users on (_.id === _.id)
+    } yield (c, s)).result
+    runCommand(innerJoin).map(se => println(se))
     runCommand(users.result)
   }
 }

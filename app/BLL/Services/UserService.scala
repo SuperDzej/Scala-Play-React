@@ -40,10 +40,14 @@ class UserService @Inject()(ussr: IUserRepository, iusdr: IUserDetailRepository,
       val addUserResult = Await.result(addUserF,  timeoutDuration)
       if(addUserResult.isSuccess) {
         val dbUserDetail = UserDetail(0L, description = "", country = "", religion = "", height = 0.0,
-          weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResult.operationObject.get.asInstanceOf[UserDetail].id)
+          weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResult.operationObject.get.id)
         val addUserDetailF = userDetailRepository.create(dbUserDetail)
         val addUserDetailResult = Await.result(addUserDetailF,  timeoutDuration)
-        addUserDetailResult.message
+        if (addUserDetailResult.isSuccess) {
+          addUserResult.message
+        } else {
+          addUserResult.message
+        }
       } else {
         addUserResult.message
       }
@@ -51,7 +55,7 @@ class UserService @Inject()(ussr: IUserRepository, iusdr: IUserDetailRepository,
   }
 
   def updateDetails(userId: Long, userDetail: UserDetailModel): String = {
-    val dbUserDetail = UserDetail(userDetail.id, description= userDetail.description, country = userDetail.country,
+    val dbUserDetail = UserDetail(userDetail.id.getOrElse(0L), description= userDetail.description, country = userDetail.country,
       religion = userDetail.religion, height = userDetail.height, weight = userDetail.weight, skin = userDetail.skin,
       hair = userDetail.hair, gender = userDetail.gender, age = userDetail.age, userId = userId)
 
@@ -71,18 +75,32 @@ class UserService @Inject()(ussr: IUserRepository, iusdr: IUserDetailRepository,
 
     opUser match {
       case Some(dbUser) =>
-        val user:Option[UserModel] = Some(UserModel(Some(dbUser.id), dbUser.firstName, dbUser.lastName,
-          dbUser.email, dbUser.username, None, None))
-        user
+        val opUserDetail = Await.result(userDetailRepository.getByUserId(dbUser.id), timeoutDuration)
+        opUserDetail match {
+          case Some(uDetail) =>
+            val userDetail = Some(UserDetailModel(id = Some(uDetail.id), description = uDetail.description, country = uDetail.country,
+              religion = uDetail.religion, height = uDetail.height, weight = uDetail.weight, skin = uDetail.skin,
+              hair = uDetail.hair, gender = uDetail.gender, age = uDetail.age, userId = uDetail.userId))
+            val user: Option[UserModel] = Some(UserModel(Some(dbUser.id), dbUser.firstName, dbUser.lastName,
+              dbUser.email, dbUser.username, None, userDetail))
+            user
+          case None => None
+        }
       case None => None
     }
   }
 
   def get: Seq[UserModel] = {
-    val dbUsers = Await.result(userRepository.get,  timeoutDuration)
+    val dbUsers = Await.result(userRepository.getWithDetails,  timeoutDuration)
 
-    val users = dbUsers.map(user => UserModel(Some(user.id), user.firstName, user.lastName,
-      user.email, user.username, None, None))
+    val users = dbUsers.map(userWithDetail => {
+      val userDetailM = Some(UserDetailModel(Some(userWithDetail._2.id), description = userWithDetail._2.description, country = userWithDetail._2.country,
+        religion = userWithDetail._2.religion, skin = userWithDetail._2.skin, hair = userWithDetail._2.hair, height = userWithDetail._2.height,
+        weight = userWithDetail._2.weight, gender = userWithDetail._2.gender, age = userWithDetail._2.age, userId = userWithDetail._2.userId))
+
+      UserModel(Some(userWithDetail._1.id), userWithDetail._1.firstName, userWithDetail._1.lastName,
+        userWithDetail._1.email, userWithDetail._1.username, None, userDetailM)
+    } )
     users
   }
 }

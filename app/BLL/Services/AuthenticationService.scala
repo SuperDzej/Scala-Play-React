@@ -3,9 +3,9 @@ package BLL.Services
 import DAL.Models.User
 import javax.inject._
 import DAL.Traits._
-import WebApi.Models.{JwtToken, UserCredentials, UserJwtPayload}
+import WebApi.Models.{UserCredentials, UserJwtPayload}
 import org.mindrot.jbcrypt.BCrypt
-import play.api.libs.json.{JsValue, Json, Reads, Writes}
+import play.api.libs.json.{Json, Writes}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -13,10 +13,11 @@ import scala.concurrent.duration._
 class AuthenticationService @Inject()(ussr: IUserRepository) {
   private val userRepository: IUserRepository = ussr
   private implicit val jwtPayloadWrites: Writes[UserJwtPayload] = Json.writes[UserJwtPayload]
+  private val timeoutDuration = 2.seconds
 
   def checkUserCredentials(email: String, password: String): Boolean = {
     val userF: Future[Option[User]] = userRepository.getByEmail(email)
-    val user: Option[User] = Await.result(userF, 3.seconds)
+    val user: Option[User] = Await.result(userF, timeoutDuration)
     user match  {
       case Some(dbUser) => validatePassword(password, dbUser.password)
       case None => false
@@ -27,7 +28,7 @@ class AuthenticationService @Inject()(ussr: IUserRepository) {
     val userAuthorized: Boolean = checkUserCredentials(credentials.email, credentials.password)
     if (userAuthorized) {
       val userF: Future[Option[User]] = ussr.getByEmail(credentials.email)
-      val user: Option[User] = Await.result(userF, 3.second)
+      val user: Option[User] = Await.result(userF, timeoutDuration)
       user match  {
         case Some(sUser) => Some(Json.toJson(UserJwtPayload(sUser.email, sUser.id, "Customer")).toString)
         case None => None
