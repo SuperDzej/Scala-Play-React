@@ -19,6 +19,10 @@ trait IUserRepository {
 
   def getByEmail(email: String): Future[Option[User]]
 
+  def getWithDetailsTakeOffsetAndLimit(offset: Long, limit: Long): Future[Seq[(User, UserDetail)]]
+
+  def getWithOffsetAndLimit(offset: Long, limit: Long): Future[Seq[User]]
+
   def getWithDetails: Future[Seq[(User, UserDetail)]]
 
   def get: Future[Seq[User]]

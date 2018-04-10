@@ -30,7 +30,7 @@ class User(_name: String, _duration: String, _octave: Int) extends Serializable 
   }
 
   // toString redefinition to return the value of an instance instead of its memory addres
-  override def toString = s"Note($name,$duration,$octave)"
+  override def toString = s"Note($name, $duration, $octave)"
 
   // Create a copy of a case class, with potentially modified field values
   def copy(name: String = name, duration: String = duration, octave: Int = octave): Note =

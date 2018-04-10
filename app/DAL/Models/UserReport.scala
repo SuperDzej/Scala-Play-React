@@ -1,4 +1,6 @@
 package DAL.Models
 
-case class UserReport (id: Long, reason: String, description: String, date: String,
+import java.sql.Timestamp
+
+case class UserReport (id: Long, reason: String, description: String, date: Timestamp,
                        userId: Long, reportedUserId: Long)

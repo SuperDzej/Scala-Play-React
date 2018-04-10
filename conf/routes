@@ -3,26 +3,39 @@
 # ~~~~
 
 # Serve index page from public directory
-GET     /                               WebApi.Controllers.FrontendController.index()
+GET     /                                           WebApi.Controllers.FrontendController.index()
 
 # User related routes
-GET         /api/users                      WebApi.Controllers.UserController.get
 
-POST        /api/users                      WebApi.Controllers.UserController.post
+GET         /api/users                              WebApi.Controllers.UserController.get
 
-GET         /api/users/:userId              WebApi.Controllers.UserController.getById(userId: Long)
+GET         /api/users/:offset/:limit               WebApi.Controllers.UserController.getWitLimitAndOffset(offset: Long, limit: Long)
 
-DELETE      /api/users/:userId              WebApi.Controllers.UserController.delete(userId: Long)
+POST        /api/users                              WebApi.Controllers.UserController.post
 
-PUT        /api/users/:userId/details      WebApi.Controllers.UserController.updateDetails(userId: Long)
+GET         /api/users/:userId                      WebApi.Controllers.UserController.getById(userId: Long)
+
+DELETE      /api/users/:userId                      WebApi.Controllers.UserController.delete(userId: Long)
+
+PUT         /api/users/:userId/details              WebApi.Controllers.UserController.updateDetails(userId: Long)
 
 # Account related routes
-POST        /token                          WebApi.Controllers.AccountController.generateToken
 
-GET         /account                        WebApi.Controllers.AccountController.index
+POST        /token                                  WebApi.Controllers.AccountController.generateToken
+
+GET         /account                                WebApi.Controllers.AccountController.index
 
 # Report related routes
-POST        /report                         WebApi.Controllers.ReportController.report
+
+GET         /api/reports                            WebApi.Controllers.ReportController.get
+
+POST        /api/reports                            WebApi.Controllers.ReportController.post
+
+DELETE      /api/reports/:id                        WebApi.Controllers.ReportController.delete(id: Long)
+
+# Messaging related routes
+
+GET         /api/messaging
 
 # Serve static assets under public directory
-GET     /*file                          WebApi.Controllers.FrontendController.assetOrDefault(file)
+GET     /*file                                      WebApi.Controllers.FrontendController.assetOrDefault(file)

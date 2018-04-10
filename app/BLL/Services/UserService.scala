@@ -24,10 +24,8 @@ import DAL.Traits._
   )
 }*/
 
-class UserService @Inject()(ussr: IUserRepository, iusdr: IUserDetailRepository,
-                            authService: AuthenticationService) {
-  private val userRepository: IUserRepository = ussr
-  private val userDetailRepository: IUserDetailRepository = iusdr
+class UserService @Inject()(private val userRepository: IUserRepository, private val userDetailRepository: IUserDetailRepository,
+                            private val authService: AuthenticationService) {
   private val timeoutDuration = 2.seconds
 
   def create(user: UserModel): String = {
@@ -78,9 +76,9 @@ class UserService @Inject()(ussr: IUserRepository, iusdr: IUserDetailRepository,
         val opUserDetail = Await.result(userDetailRepository.getByUserId(dbUser.id), timeoutDuration)
         opUserDetail match {
           case Some(uDetail) =>
-            val userDetail = Some(UserDetailModel(id = Some(uDetail.id), description = uDetail.description, country = uDetail.country,
+            val userDetail = Some(UserDetailModel(id = None, description = uDetail.description, country = uDetail.country,
               religion = uDetail.religion, height = uDetail.height, weight = uDetail.weight, skin = uDetail.skin,
-              hair = uDetail.hair, gender = uDetail.gender, age = uDetail.age, userId = uDetail.userId))
+              hair = uDetail.hair, gender = uDetail.gender, age = uDetail.age, userId = None))
             val user: Option[UserModel] = Some(UserModel(Some(dbUser.id), dbUser.firstName, dbUser.lastName,
               dbUser.email, dbUser.username, None, userDetail))
             user
@@ -94,13 +92,46 @@ class UserService @Inject()(ussr: IUserRepository, iusdr: IUserDetailRepository,
     val dbUsers = Await.result(userRepository.getWithDetails,  timeoutDuration)
 
     val users = dbUsers.map(userWithDetail => {
-      val userDetailM = Some(UserDetailModel(Some(userWithDetail._2.id), description = userWithDetail._2.description, country = userWithDetail._2.country,
-        religion = userWithDetail._2.religion, skin = userWithDetail._2.skin, hair = userWithDetail._2.hair, height = userWithDetail._2.height,
-        weight = userWithDetail._2.weight, gender = userWithDetail._2.gender, age = userWithDetail._2.age, userId = userWithDetail._2.userId))
+      val userDetailM = Some(UserDetailModel(None, description = userWithDetail._2.description,
+        country = userWithDetail._2.country, religion = userWithDetail._2.religion, skin = userWithDetail._2.skin,
+        hair = userWithDetail._2.hair, height = userWithDetail._2.height, weight = userWithDetail._2.weight,
+        gender = userWithDetail._2.gender, age = userWithDetail._2.age, userId = None))
 
       UserModel(Some(userWithDetail._1.id), userWithDetail._1.firstName, userWithDetail._1.lastName,
         userWithDetail._1.email, userWithDetail._1.username, None, userDetailM)
     } )
+    users
+  }
+
+  def getWithOffsetAndLimit(offset: Long, limit: Long): Seq[UserModel] = {
+    if (limit > 1000) {
+      println("Limit too big")
+    }
+
+    val dbUsers = Await.result(userRepository.getWithOffsetAndLimit(offset, limit), timeoutDuration)
+    val dbUsersIds = dbUsers.map(user => user.id)
+    val usersDetails = Await.result(userDetailRepository.getByUserIds(dbUsersIds), timeoutDuration)
+    val users = dbUsers.map(user => {
+      val userDetail = usersDetails.filter(_.userId == user.id).head
+
+      val userDetailM = Some(UserDetailModel(None, description = userDetail.description,
+        country = userDetail.country, religion = userDetail.religion, skin = userDetail.skin,
+        hair = userDetail.hair, height = userDetail.height, weight = userDetail.weight,
+        gender = userDetail.gender, age = userDetail.age, userId = None))
+
+      UserModel(Some(user.id), user.firstName, user.lastName,
+        user.email, user.username, None, userDetailM)
+    } )
+    /*val dbUsers = Await.result(userRepository.getWithDetailsTakeOffsetAndLimit(offset, limit), timeoutDuration)
+    val users = dbUsers.map(userWithDetail => {
+      val userDetailM = Some(UserDetailModel(None, description = userWithDetail._2.description,
+        country = userWithDetail._2.country, religion = userWithDetail._2.religion, skin = userWithDetail._2.skin,
+        hair = userWithDetail._2.hair, height = userWithDetail._2.height, weight = userWithDetail._2.weight,
+        gender = userWithDetail._2.gender, age = userWithDetail._2.age, userId = None))
+
+      UserModel(Some(userWithDetail._1.id), userWithDetail._1.firstName, userWithDetail._1.lastName,
+        userWithDetail._1.email, userWithDetail._1.username, None, userDetailM)
+    } )*/
     users
   }
 }

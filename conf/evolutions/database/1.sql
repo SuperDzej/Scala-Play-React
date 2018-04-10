@@ -12,6 +12,16 @@ CREATE TABLE "user" (
   "password" TEXT NOT NULL
 );
 
+CREATE TABLE "role" (
+  "id" SERIAL PRIMARY KEY,
+  "name" TEXT NOT NULL
+);
+
+CREATE TABLE "user_role" (
+  "userId" SERIAL REFERENCES "user"(id),
+  "roleId" SERIAL REFERENCES "role"(id)
+);
+
 CREATE TABLE "user_detail" (
   "id" SERIAL PRIMARY KEY,
   "description" TEXT NOT NULL,
@@ -24,9 +34,34 @@ CREATE TABLE "user_detail" (
   "gender" VARCHAR(20) NOT NULL,
   "age" SMALLINT,
   "userId" SERIAL REFERENCES "user"(id)
-)
+);
+
+CREATE TABLE "user_report" (
+  "id" SERIAL PRIMARY KEY,
+  "description" TEXT NOT NULL,
+  "reason" VARCHAR(100) NOT NULL,
+  "date" TIMESTAMP NOT NULL,
+  "userId" SERIAL REFERENCES "user"(id),
+  "reportedUserId" SERIAL REFERENCES "user"(id)
+);
+
+CREATE TABLE "user_interest" (
+  "id" SERIAL PRIMARY KEY,
+  "description" TEXT NOT NULL,
+  "reason" VARCHAR(100) NOT NULL,
+  "date" TIMESTAMP NOT NULL,
+  "userId" SERIAL REFERENCES "user"(id)
+);
 
 # --- !Downs
-drop table "user"
+DROP TABLE "user";
 
-drop table "user_detail"
+DROP TABLE "role";
+
+DROP TABLE "user_role";
+
+DROP TABLE "user_detail";
+
+DROP TABLE "user_report";
+
+DROP TABLE "user_interest";

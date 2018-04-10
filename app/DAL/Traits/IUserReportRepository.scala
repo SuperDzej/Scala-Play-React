@@ -10,7 +10,9 @@ trait IUserReportRepository {
 
   def delete(id: Long): Future[Int]
 
-  def update(user: UserReport) : Future[OperationResult[UserReport]]
+  def update(user: UserReport): Future[OperationResult[UserReport]]
+
+  def getByUserIdAndReportedUserId(userId: Long, reportedUserId: Long): Future[Option[UserReport]]
 
   def getById(id: Long): Future[Option[UserReport]]
 

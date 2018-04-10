@@ -11,9 +11,11 @@ import WebApi.Utilities.{JWTAuthentication, JwtUtility}
 class AccountController @Inject()(cc: ControllerComponents, jwtAuthentication: JWTAuthentication,
                                   jwtUtility: JwtUtility, authService: AuthenticationService)
   extends AbstractController(cc) {
+
   private implicit val credentialsRead: Reads[UserCredentials] = Json.reads[UserCredentials]
   private implicit val jwtTokenWrite: Writes[JwtToken] = Json.writes[JwtToken]
-  def index = jwtAuthentication { request => 
+
+  def index = jwtAuthentication { _ =>
     Ok("User authenticated")
   }
 

@@ -1,5 +1,7 @@
 package BLL.Services
 
+import java.util.Calendar
+
 import javax.inject._
 
 import scala.concurrent.duration._
@@ -8,44 +10,51 @@ import BLL.Models._
 import DAL.Models.UserReport
 import DAL.Traits._
 
-class UserReportService @Inject()(ussr: IUserReportRepository) {
-  private val userRepository: IUserReportRepository = ussr
+class UserReportService @Inject()(private val userReportRepository: IUserReportRepository) {
   private val timeoutDuration = 2.seconds
 
-  /*def create(user: UserReportModel): String = {
-    user.password.fold("No user password provided")(password => {
-      val dbUser = UserReport(0L, reason= String, description= String, date= String,
-        userId= Long, reportedUserId= Long)
+  def create(userReportM: UserReportModel): String = {
 
-      val addUserF = userRepository.create(dbUser)
-      val addUserResult = Await.result(addUserF,  timeoutDuration)
-      addUserResult.message
-    })
+    val userReportedO = Await.result(userReportRepository
+      .getByUserIdAndReportedUserId(userReportM.userId, userReportM.reportedUserId), timeoutDuration)
+
+    userReportedO match {
+      case Some(_) => "User report already created"
+      case None =>
+        val date = new java.sql.Timestamp(Calendar.getInstance.getTimeInMillis)
+
+        val dbUser = UserReport(0L, reason = userReportM.reason, description = userReportM.description, date = date,
+          userId = userReportM.userId, reportedUserId = userReportM.reportedUserId)
+
+        val addUserReportF = userReportRepository.create(dbUser)
+        val addUserReportResult = Await.result(addUserReportF,  timeoutDuration)
+        addUserReportResult.message
+    }
   }
 
   def delete(id: Long): Int = {
-    val deleteUserF = userRepository.delete(id)
+    val deleteUserF = userReportRepository.delete(id)
     val deleteUserId = Await.result(deleteUserF,  timeoutDuration)
     deleteUserId
   }
 
   def getById(id: Long): Option[UserReportModel] = {
-    val opUser = Await.result(userRepository.getById(id),  timeoutDuration)
+    val opUser = Await.result(userReportRepository.getById(id),  timeoutDuration)
 
     opUser match {
       case Some(dbUser) =>
-        val user:Option[UserReportModel] = Some(UserReportModel(dbUser.id, dbUser.firstName, dbUser.lastName,
-          dbUser.email, dbUser.username, None))
+        val user:Option[UserReportModel] = Some(UserReportModel(Some(dbUser.id), dbUser.reason, dbUser.description,
+          Some(dbUser.date.toString), dbUser.userId, dbUser.reportedUserId))
         user
       case None => None
     }
   }
 
   def get: Seq[UserReportModel] = {
-    val dbUsers = Await.result(userRepository.get,  timeoutDuration)
+    val dbUsers = Await.result(userReportRepository.get,  timeoutDuration)
 
-    val users = dbUsers.map(user => UserReportModel(user.id, user.firstName, user.lastName,
-      user.email, user.username, None))
+    val users = dbUsers.map(user => UserReportModel(Some(user.id), user.reason, user.description,
+      Some(user.date.toString), user.userId, user.reportedUserId))
     users
-  }*/
+  }
 }

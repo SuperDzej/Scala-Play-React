@@ -30,7 +30,11 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
   }
 
   def update(user: User) : Future[OperationResult[User]] = {
-    runCommand(users.update(user))
+    val mapUpdateAction = users.filter(_.id === user.id)
+      .map(dbUser => (dbUser.firstName, dbUser.lastName, dbUser.username, dbUser.isVerified, dbUser.isDisabled))
+      .update( (user.firstName, user.lastName, user.username, user.isVerified, user.isDisabled))
+
+    runCommand(mapUpdateAction)
       .map(updateCount => {
         if (updateCount <= 0) {
           OperationResult(isSuccess = false, "User not updated", operationObject = Some(user))
@@ -51,8 +55,15 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
     runCommand(users.filter(_.email === email).result).map(_.headOption)
   }
 
-  def getWithOffsetAndLimit(offset: Int, limit: Int): Future[Seq[User]] = {
+  def getWithOffsetAndLimit(offset: Long, limit: Long): Future[Seq[User]] = {
     runCommand(users.drop(offset).take(limit).result)
+  }
+
+  def getWithDetailsTakeOffsetAndLimit(offset: Long, limit: Long): Future[Seq[(User, UserDetail)]] = {
+    val innerJoin = (for {
+      (c, s) <- users join usersDetails on (_.id === _.userId)
+    } yield (c, s)).drop(offset).take(limit).result
+    runCommand(innerJoin)
   }
 
   def getWithDetails: Future[Seq[(User, UserDetail)]] = {
@@ -63,10 +74,6 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
   }
 
   def get: Future[Seq[User]] = {
-    val innerJoin = (for {
-      (c, s) <- users join users on (_.id === _.id)
-    } yield (c, s)).result
-    runCommand(innerJoin).map(se => println(se))
     runCommand(users.result)
   }
 }

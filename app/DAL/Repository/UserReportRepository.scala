@@ -27,7 +27,11 @@ class UserReportRepository @Inject()() extends BaseRepository() with IUserReport
   }
 
   def update(user: UserReport) : Future[OperationResult[UserReport]] = {
-    runCommand(users.update(user))
+    val mapUpdateAction = users.filter(_.id === user.id)
+      .map(dbUser => (dbUser.reason, dbUser.description, dbUser.date))
+      .update( (user.reason, user.description, user.date))
+
+    runCommand(mapUpdateAction)
       .map(updateCount => {
         if (updateCount <= 0) {
           OperationResult(isSuccess = false, "User report not updated", operationObject = Some(user))
@@ -38,6 +42,12 @@ class UserReportRepository @Inject()() extends BaseRepository() with IUserReport
       .recover {
       case ex : Exception => OperationResult[UserReport](isSuccess = false, ex.getMessage, None)
     }
+  }
+
+  def getByUserIdAndReportedUserId(userId: Long, reportedUserId: Long) : Future[Option[UserReport]] = {
+    runCommand(users.filter(user => user.userId === userId &&
+      user.reportedUserId === reportedUserId).result)
+      .map(_.headOption)
   }
 
   def getById(id: Long): Future[Option[UserReport]] = {

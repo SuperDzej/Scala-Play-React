@@ -1,27 +1,36 @@
 package WebApi.Controllers
 
-import BLL.Services.UserService
-import DAL.Models.UserReport
+import BLL.Models.UserReportModel
+import BLL.Services.UserReportService
 import javax.inject._
-import play.api.libs.json.{JsValue, Json, Reads}
+import play.api.libs.json.{JsValue, Json, Reads, Writes}
 import play.api.mvc._
 
 
 @Singleton
-class ReportController @Inject()(cc: ControllerComponents, ussc: UserService)
+class ReportController @Inject()(cc: ControllerComponents, userReportService: UserReportService)
   extends AbstractController(cc) {
-  private implicit val reportReads: Reads[UserReport] = Json.reads[UserReport]
-  def index = Action {
-    Ok("Welcome to report action")
-  }
+
+  private implicit val reportReads: Reads[UserReportModel] = Json.reads[UserReportModel]
+  private implicit val reportWrites: Writes[UserReportModel] = Json.writes[UserReportModel]
 
   def get = Action {
-    NotFound
+    val reports = userReportService.get
+    Ok(Json.toJson(reports))
   }
 
-  def report: Action[JsValue]  = Action(parse.json) { request =>
-    val jsonReportFromBody = request.body.as[UserReport]
-    println(jsonReportFromBody)
-    NotFound
+  def post: Action[JsValue]  = Action(parse.json) { request =>
+    val jsonReportFromBody = request.body.as[UserReportModel]
+    val createdMessage = userReportService.create(jsonReportFromBody)
+    Ok(createdMessage)
+  }
+
+  def delete(userId: Long) = Action {
+    val deletedUserId: Int = userReportService.delete(userId)
+    if(deletedUserId == userId) {
+      Ok("User report deleted")
+    } else {
+      NotFound("No user report with id for deletion")
+    }
   }
 }

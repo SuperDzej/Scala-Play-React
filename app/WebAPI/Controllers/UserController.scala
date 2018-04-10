@@ -8,24 +8,30 @@ import BLL.Services._
 import DAL.Repository.UserDetailRepository
 
 @Singleton
-class UserController @Inject()(cc: ControllerComponents, ussc: UserService, userDetailRepository: UserDetailRepository)
+class UserController @Inject()(cc: ControllerComponents, userService: UserService,
+                               userDetailRepository: UserDetailRepository)
   extends AbstractController(cc) {
 
-  private val userService: UserService = ussc
   private implicit val userDetailModelReads: Reads[UserDetailModel] = Json.reads[UserDetailModel]
   private implicit val userDetailModelWrites: Writes[UserDetailModel] = Json.writes[UserDetailModel]
   private implicit val userModelWrites: Writes[UserModel] = Json.writes[UserModel]
   private implicit val userModelReads: Reads[UserModel] = Json.reads[UserModel]
 
   def get = Action {
+
     val users: Seq[UserModel] = userService.get
+    Ok(Json.toJson(users))
+  }
+
+  def getWitLimitAndOffset(offset: Long, limit: Long) = Action { _ =>
+    val users = userService.getWithOffsetAndLimit(offset, limit)
     Ok(Json.toJson(users))
   }
 
   def getById(userId: Long) = Action { _ =>
     val user: Option[UserModel] = userService.getById(userId)
     user match {
-      case userM: Some[UserModel] => println(userM); Ok(Json.toJson(userM))
+      case userM: Some[UserModel] => Ok(Json.toJson(userM))
       case None => NotFound
     }
   }
