@@ -27,7 +27,11 @@ class UserInterestRepository @Inject()() extends BaseRepository() with IUserInte
   }
 
   def update(user: UserInterest) : Future[OperationResult[UserInterest]] = {
-    runCommand(usersInterests.update(user))
+    val mapUpdateAction = usersInterests.filter(_.id === user.id)
+      .map(dbUser => (dbUser.description, dbUser.name))
+      .update( (user.description, user.name))
+
+    runCommand(mapUpdateAction)
       .map(updateCount => {
         if (updateCount <= 0) {
           OperationResult(isSuccess = false, "User interests not updated", operationObject = Some(user))

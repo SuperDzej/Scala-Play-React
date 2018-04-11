@@ -19,6 +19,14 @@ class ReportController @Inject()(cc: ControllerComponents, userReportService: Us
     Ok(Json.toJson(reports))
   }
 
+  def getById(id: Long) = Action {
+    val report = userReportService.getById(id)
+    report match {
+      case Some(rep) => Ok(Json.toJson(rep))
+      case None => NotFound("No report with selected id")
+    }
+  }
+
   def post: Action[JsValue]  = Action(parse.json) { request =>
     val jsonReportFromBody = request.body.as[UserReportModel]
     val createdMessage = userReportService.create(jsonReportFromBody)

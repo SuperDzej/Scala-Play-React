@@ -1,14 +1,11 @@
 package DAL.Traits
 
 import DAL.Helpers.OperationResult
-import DAL.Models._
-import DAL.Repository._
-import com.google.inject.ImplementedBy
+import DAL.Models.User
 
 import scala.concurrent.Future
 
-@ImplementedBy(classOf[UserRepository])
-trait IUserRepository {
+trait ISkillRepository {
   def create(user: User): Future[OperationResult[Long]]
 
   def delete(id: Long): Future[Int]

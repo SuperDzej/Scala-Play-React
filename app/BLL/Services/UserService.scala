@@ -1,8 +1,6 @@
 package BLL.Services
 
 import javax.inject._
-import play.api.data.Form
-import play.api.data.Forms._
 
 import scala.concurrent.duration._
 import scala.concurrent.Await
@@ -38,7 +36,7 @@ class UserService @Inject()(private val userRepository: IUserRepository, private
       val addUserResult = Await.result(addUserF,  timeoutDuration)
       if(addUserResult.isSuccess) {
         val dbUserDetail = UserDetail(0L, description = "", country = "", religion = "", height = 0.0,
-          weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResult.operationObject.get.id)
+          weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResult.operationObject.get)
         val addUserDetailF = userDetailRepository.create(dbUserDetail)
         val addUserDetailResult = Await.result(addUserDetailF,  timeoutDuration)
         if (addUserDetailResult.isSuccess) {
@@ -88,41 +86,13 @@ class UserService @Inject()(private val userRepository: IUserRepository, private
     }
   }
 
-  def get: Seq[UserModel] = {
-    val dbUsers = Await.result(userRepository.getWithDetails,  timeoutDuration)
-
-    val users = dbUsers.map(userWithDetail => {
-      val userDetailM = Some(UserDetailModel(None, description = userWithDetail._2.description,
-        country = userWithDetail._2.country, religion = userWithDetail._2.religion, skin = userWithDetail._2.skin,
-        hair = userWithDetail._2.hair, height = userWithDetail._2.height, weight = userWithDetail._2.weight,
-        gender = userWithDetail._2.gender, age = userWithDetail._2.age, userId = None))
-
-      UserModel(Some(userWithDetail._1.id), userWithDetail._1.firstName, userWithDetail._1.lastName,
-        userWithDetail._1.email, userWithDetail._1.username, None, userDetailM)
-    } )
-    users
-  }
-
   def getWithOffsetAndLimit(offset: Long, limit: Long): Seq[UserModel] = {
     if (limit > 1000) {
       println("Limit too big")
+      Seq.empty[UserModel]
     }
 
-    val dbUsers = Await.result(userRepository.getWithOffsetAndLimit(offset, limit), timeoutDuration)
-    val dbUsersIds = dbUsers.map(user => user.id)
-    val usersDetails = Await.result(userDetailRepository.getByUserIds(dbUsersIds), timeoutDuration)
-    val users = dbUsers.map(user => {
-      val userDetail = usersDetails.filter(_.userId == user.id).head
-
-      val userDetailM = Some(UserDetailModel(None, description = userDetail.description,
-        country = userDetail.country, religion = userDetail.religion, skin = userDetail.skin,
-        hair = userDetail.hair, height = userDetail.height, weight = userDetail.weight,
-        gender = userDetail.gender, age = userDetail.age, userId = None))
-
-      UserModel(Some(user.id), user.firstName, user.lastName,
-        user.email, user.username, None, userDetailM)
-    } )
-    /*val dbUsers = Await.result(userRepository.getWithDetailsTakeOffsetAndLimit(offset, limit), timeoutDuration)
+    val dbUsers = Await.result(userDetailRepository.getWithOffsetAndLimit(offset, limit), timeoutDuration)
     val users = dbUsers.map(userWithDetail => {
       val userDetailM = Some(UserDetailModel(None, description = userWithDetail._2.description,
         country = userWithDetail._2.country, religion = userWithDetail._2.religion, skin = userWithDetail._2.skin,
@@ -131,7 +101,7 @@ class UserService @Inject()(private val userRepository: IUserRepository, private
 
       UserModel(Some(userWithDetail._1.id), userWithDetail._1.firstName, userWithDetail._1.lastName,
         userWithDetail._1.email, userWithDetail._1.username, None, userDetailM)
-    } )*/
+    } )
     users
   }
 }

@@ -8,11 +8,11 @@ import BLL.Services._
 import DAL.Repository.UserDetailRepository
 
 @Singleton
-class UserController @Inject()(cc: ControllerComponents, userService: UserService,
-                               userDetailRepository: UserDetailRepository)
+class SkillController @Inject()(cc: ControllerComponents, userService: UserService,
+                                  userDetailRepository: UserDetailRepository)
   extends AbstractController(cc) {
 
-  private implicit val userDetailModelReads: Reads[UserDetailModel] = Json.reads[UserDetailModel]
+  /*private implicit val userDetailModelReads: Reads[UserDetailModel] = Json.reads[UserDetailModel]
   private implicit val userDetailModelWrites: Writes[UserDetailModel] = Json.writes[UserDetailModel]
   private implicit val userModelWrites: Writes[UserModel] = Json.writes[UserModel]
   private implicit val userModelReads: Reads[UserModel] = Json.reads[UserModel]
@@ -52,5 +52,5 @@ class UserController @Inject()(cc: ControllerComponents, userService: UserServic
     } else {
       NotFound("No user with id for deletion")
     }
-  }
+  }*/
 }

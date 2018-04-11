@@ -1,27 +1,25 @@
 package DAL.Repository
 
-import DAL.Helpers.OperationResult
-
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
-
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import javax.inject._
-import DAL.Models.{User, UserDetail}
+
+import DAL.Helpers.OperationResult
+import DAL.Models.User
 import DAL.Traits._
-import DAL.Migrations.{UserDetailTable, UserTable}
+import DAL.Migrations.UserTable
 
 class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
   val users = TableQuery[UserTable]
-  val usersDetails = TableQuery[UserDetailTable]
 
-  def create(user: User): Future[OperationResult[User]] = {
+  def create(user: User): Future[OperationResult[Long]] = {
     val userIdQuery = (users returning users.map(_.id)) += user
     runCommand(userIdQuery).map(userId => {
-      user.id = userId
-      OperationResult[User](isSuccess = true, "User successfully created", Some(user))
+      OperationResult[Long](isSuccess = true, "User successfully created", Some(userId))
     }).recover {
-        case ex: Exception => OperationResult[User](isSuccess = false, ex.getMessage, None)
+        case ex: Exception => OperationResult[Long](isSuccess = false, ex.getMessage, None)
       }
   }
 
@@ -57,20 +55,6 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
 
   def getWithOffsetAndLimit(offset: Long, limit: Long): Future[Seq[User]] = {
     runCommand(users.drop(offset).take(limit).result)
-  }
-
-  def getWithDetailsTakeOffsetAndLimit(offset: Long, limit: Long): Future[Seq[(User, UserDetail)]] = {
-    val innerJoin = (for {
-      (c, s) <- users join usersDetails on (_.id === _.userId)
-    } yield (c, s)).drop(offset).take(limit).result
-    runCommand(innerJoin)
-  }
-
-  def getWithDetails: Future[Seq[(User, UserDetail)]] = {
-    val innerJoin = (for {
-      (c, s) <- users join usersDetails on (_.id === _.userId)
-    } yield (c, s)).result
-    runCommand(innerJoin)
   }
 
   def get: Future[Seq[User]] = {

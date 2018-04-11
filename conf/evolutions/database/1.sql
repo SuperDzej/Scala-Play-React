@@ -53,6 +53,32 @@ CREATE TABLE "user_interest" (
   "userId" SERIAL REFERENCES "user"(id)
 );
 
+CREATE TABLE "skill" (
+  "id" SERIAL PRIMARY KEY,
+  "description" TEXT NOT NULL,
+  "name" VARCHAR(100) NOT NULL,
+  "level" VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE "user_skill" (
+  "userId" SERIAL REFERENCES "user"(id),
+  "skillId" SERIAL REFERENCES "skill"(id)
+);
+
+CREATE TABLE "project" (
+  "id" SERIAL PRIMARY KEY,
+  "description" TEXT NOT NULL,
+  "name" VARCHAR(100) NOT NULL,
+  "url" TEXT NOT NULL,
+  "startDate" TIMESTAMP NOT NULL,
+  "endDate" TIMESTAMP NOT NULL
+);
+
+CREATE TABLE "project_skill" (
+  "projectId" SERIAL REFERENCES "project"(id),
+  "skillId" SERIAL REFERENCES "skill"(id)
+);
+
 # --- !Downs
 DROP TABLE "user";
 
@@ -65,3 +91,7 @@ DROP TABLE "user_detail";
 DROP TABLE "user_report";
 
 DROP TABLE "user_interest";
+
+DROP TABLE "skill";
+
+DROP TABLE "user_skill";

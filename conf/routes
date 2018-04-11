@@ -7,8 +7,6 @@ GET     /                                           WebApi.Controllers.FrontendC
 
 # User related routes
 
-GET         /api/users                              WebApi.Controllers.UserController.get
-
 GET         /api/users/:offset/:limit               WebApi.Controllers.UserController.getWitLimitAndOffset(offset: Long, limit: Long)
 
 POST        /api/users                              WebApi.Controllers.UserController.post
@@ -29,13 +27,15 @@ GET         /account                                WebApi.Controllers.AccountCo
 
 GET         /api/reports                            WebApi.Controllers.ReportController.get
 
+GET         /api/reports/:id                        WebApi.Controllers.ReportController.getById(id: Long)
+
 POST        /api/reports                            WebApi.Controllers.ReportController.post
 
 DELETE      /api/reports/:id                        WebApi.Controllers.ReportController.delete(id: Long)
 
-# Messaging related routes
+# Skills related routes
 
-GET         /api/messaging
+
 
 # Serve static assets under public directory
 GET     /*file                                      WebApi.Controllers.FrontendController.assetOrDefault(file)
