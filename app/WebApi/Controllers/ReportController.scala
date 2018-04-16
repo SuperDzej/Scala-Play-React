@@ -11,9 +11,6 @@ import play.api.mvc._
 class ReportController @Inject()(cc: ControllerComponents, userReportService: UserReportService)
   extends AbstractController(cc) {
 
-  private implicit val reportReads: Reads[UserReportModel] = Json.reads[UserReportModel]
-  private implicit val reportWrites: Writes[UserReportModel] = Json.writes[UserReportModel]
-
   def get = Action {
     val reports = userReportService.get
     Ok(Json.toJson(reports))

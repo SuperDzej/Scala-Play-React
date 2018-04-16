@@ -1,4 +1,4 @@
-package DAL.Migrations
+package DAL.TableMapping
 
 
 import java.sql.Timestamp

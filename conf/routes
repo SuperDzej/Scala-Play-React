@@ -35,7 +35,15 @@ DELETE      /api/reports/:id                        WebApi.Controllers.ReportCon
 
 # Skills related routes
 
+GET         /api/skills/:id                         WebApi.Controllers.SkillController.getById(id: Long)
 
+POST        /api/skills                             WebApi.Controllers.SkillController.post
+
+# Project related routes
+
+GET         /api/projects/:id                       WebApi.Controllers.ProjectController.getById(id: Long)
+
+POST        /api/projects                           WebApi.Controllers.ProjectController.post
 
 # Serve static assets under public directory
 GET     /*file                                      WebApi.Controllers.FrontendController.assetOrDefault(file)

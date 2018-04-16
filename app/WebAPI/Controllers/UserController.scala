@@ -12,11 +12,6 @@ class UserController @Inject()(cc: ControllerComponents, userService: UserServic
                                userDetailRepository: UserDetailRepository)
   extends AbstractController(cc) {
 
-  private implicit val userDetailModelReads: Reads[UserDetailModel] = Json.reads[UserDetailModel]
-  private implicit val userDetailModelWrites: Writes[UserDetailModel] = Json.writes[UserDetailModel]
-  private implicit val userModelWrites: Writes[UserModel] = Json.writes[UserModel]
-  private implicit val userModelReads: Reads[UserModel] = Json.reads[UserModel]
-
   def getWitLimitAndOffset(offset: Long, limit: Long) = Action { _ =>
     val users = userService.getWithOffsetAndLimit(offset, limit)
     Ok(Json.toJson(users))

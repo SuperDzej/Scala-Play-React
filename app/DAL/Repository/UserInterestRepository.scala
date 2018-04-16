@@ -1,7 +1,5 @@
 package DAL.Repository
 
-import DAL.Helpers.OperationResult
-
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 
@@ -9,16 +7,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
 import DAL.Models.UserInterest
 import DAL.Traits._
-import DAL.Migrations.UserInterestTable
+import DAL.TableMapping.UserInterestTable
 
 class UserInterestRepository @Inject()() extends BaseRepository() with IUserInterestRepository {
   val usersInterests = TableQuery[UserInterestTable]
 
-  def create(user: UserInterest): Future[OperationResult[UserInterest]] = {
-    runCommand(usersInterests += user)
-      .map(_ => OperationResult[UserInterest](isSuccess = true, "User interest successfully added", Some(user)))
+  def create(userInterest: UserInterest): Future[Option[Long]] = {
+    val userInterestIdQuery = (usersInterests returning usersInterests.map(_.id)) += userInterest
+    runCommand(userInterestIdQuery)
+      .map(userId =>  Some(userId))
       .recover {
-      case ex: Exception => OperationResult[UserInterest](isSuccess = false, ex.getMessage, None)
+      case _: Exception => None
     }
   }
 
@@ -26,7 +25,7 @@ class UserInterestRepository @Inject()() extends BaseRepository() with IUserInte
     runCommand(usersInterests.filter(_.id === id).delete)
   }
 
-  def update(user: UserInterest) : Future[OperationResult[UserInterest]] = {
+  def update(user: UserInterest) : Future[Option[UserInterest]] = {
     val mapUpdateAction = usersInterests.filter(_.id === user.id)
       .map(dbUser => (dbUser.description, dbUser.name))
       .update( (user.description, user.name))
@@ -34,13 +33,13 @@ class UserInterestRepository @Inject()() extends BaseRepository() with IUserInte
     runCommand(mapUpdateAction)
       .map(updateCount => {
         if (updateCount <= 0) {
-          OperationResult(isSuccess = false, "User interests not updated", operationObject = Some(user))
+          None
         } else {
-          OperationResult(isSuccess = true, "User interests successfully updated", operationObject = Some(user))
+          Some(user)
         }
       })
       .recover {
-      case ex : Exception => OperationResult[UserInterest](isSuccess = false, ex.getMessage, None)
+      case ex : Exception => None
     }
   }
 

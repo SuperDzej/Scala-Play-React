@@ -1,4 +1,4 @@
-package DAL.Migrations
+package DAL.TableMapping
 
 import slick.jdbc.PostgresProfile.api._
 import DAL.Models.UserDetail

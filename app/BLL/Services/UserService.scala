@@ -33,19 +33,19 @@ class UserService @Inject()(private val userRepository: IUserRepository, private
         isVerified = false, isDisabled = false, hashedPassword)
 
       val addUserF = userRepository.create(dbUser)
-      val addUserResult = Await.result(addUserF,  timeoutDuration)
-      if(addUserResult.isSuccess) {
+      val addUserResultId = Await.result(addUserF,  timeoutDuration)
+      if(addUserResultId.getOrElse(0L) > 0L) {
         val dbUserDetail = UserDetail(0L, description = "", country = "", religion = "", height = 0.0,
-          weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResult.operationObject.get)
+          weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResultId.get)
         val addUserDetailF = userDetailRepository.create(dbUserDetail)
         val addUserDetailResult = Await.result(addUserDetailF,  timeoutDuration)
-        if (addUserDetailResult.isSuccess) {
-          addUserResult.message
+        if (addUserDetailResult.getOrElse(0L) > 0L) {
+          "User created"
         } else {
-          addUserResult.message
+          "User not created"
         }
       } else {
-        addUserResult.message
+        "User not created"
       }
     })
   }
@@ -56,8 +56,12 @@ class UserService @Inject()(private val userRepository: IUserRepository, private
       hair = userDetail.hair, gender = userDetail.gender, age = userDetail.age, userId = userId)
 
     val addDetailsF = userDetailRepository.update(dbUserDetail)
-    val addUserResult = Await.result(addDetailsF,  timeoutDuration)
-    addUserResult.message
+    val updateUserResult = Await.result(addDetailsF,  timeoutDuration)
+    updateUserResult match {
+      case Some(_) => "User updated"
+      case None => "User not updated"
+
+    }
   }
 
   def delete(id: Long): Int = {
@@ -89,7 +93,7 @@ class UserService @Inject()(private val userRepository: IUserRepository, private
   def getWithOffsetAndLimit(offset: Long, limit: Long): Seq[UserModel] = {
     if (limit > 1000) {
       println("Limit too big")
-      Seq.empty[UserModel]
+      return Seq.empty[UserModel]
     }
 
     val dbUsers = Await.result(userDetailRepository.getWithOffsetAndLimit(offset, limit), timeoutDuration)

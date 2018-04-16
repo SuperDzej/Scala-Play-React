@@ -1,7 +1,5 @@
 package DAL.Repository
 
-import DAL.Helpers.OperationResult
-
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 
@@ -9,18 +7,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
 import DAL.Models.{User, UserDetail}
 import DAL.Traits._
-import DAL.Migrations.{UserDetailTable, UserTable}
+import DAL.TableMapping.{UserDetailTable, UserTable}
 
 class UserDetailRepository @Inject()() extends BaseRepository() with IUserDetailRepository {
   val usersDetails = TableQuery[UserDetailTable]
   val users = TableQuery[UserTable]
 
-  def create(user: UserDetail): Future[OperationResult[UserDetail]] = {
-    runCommand(usersDetails += user)
-      .map(_ =>
-        OperationResult[UserDetail](isSuccess = true, "User detail successfully added", operationObject = Some(user)))
+  def create(userDetail: UserDetail): Future[Option[Long]] = {
+    val userIdQuery = (usersDetails returning usersDetails.map(_.id)) += userDetail
+    runCommand(userIdQuery)
+      .map(userId =>
+         Some(userId))
       .recover {
-        case ex: Exception => OperationResult[UserDetail](isSuccess = false, ex.getMessage, operationObject = None)
+        case _: Exception => None
     }
   }
 
@@ -28,7 +27,7 @@ class UserDetailRepository @Inject()() extends BaseRepository() with IUserDetail
     runCommand(usersDetails.filter(_.id === id).delete)
   }
 
-  def update(user: UserDetail) : Future[OperationResult[UserDetail]] = {
+  def update(user: UserDetail) : Future[Option[UserDetail]] = {
     val mapUpdateAction = usersDetails.filter(_.id === user.id)
       .map(dbUser => (dbUser.gender, dbUser.skin, dbUser.weight, dbUser.height, dbUser.hair,
         dbUser.description, dbUser.religion, dbUser.age, dbUser.country))
@@ -38,13 +37,13 @@ class UserDetailRepository @Inject()() extends BaseRepository() with IUserDetail
     runCommand(mapUpdateAction)
       .map(updateCount => {
         if (updateCount <= 0) {
-          OperationResult(isSuccess = false, "User details not updated", operationObject = Some(user))
+          None
         } else {
-          OperationResult(isSuccess = true, "User details successfully updated", operationObject = Some(user))
+          Some(user)
         }
       })
       .recover {
-        case ex : Exception => OperationResult(isSuccess = false, ex.getMessage, operationObject = None)
+        case _ : Exception => None
     }
   }
 

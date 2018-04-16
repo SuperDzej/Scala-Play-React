@@ -79,6 +79,8 @@ CREATE TABLE "project_skill" (
   "skillId" SERIAL REFERENCES "skill"(id)
 );
 
+
+
 # --- !Downs
 DROP TABLE "user";
 
@@ -95,3 +97,7 @@ DROP TABLE "user_interest";
 DROP TABLE "skill";
 
 DROP TABLE "user_skill";
+
+DROP TABLE "project";
+
+DROP TABLE "project_skill";

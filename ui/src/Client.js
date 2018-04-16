@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 function getSummary(cb) {
-  return fetch('/api/users', {
+  return fetch('/api/users/0/10', {
     accept: "application/json"
   })
     .then(checkStatus)

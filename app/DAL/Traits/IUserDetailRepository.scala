@@ -1,16 +1,15 @@
 package DAL.Traits
 
-import DAL.Helpers.OperationResult
 import DAL.Models.{User, UserDetail}
 
 import scala.concurrent.Future
 
 trait IUserDetailRepository {
-  def create(user: UserDetail): Future[OperationResult[UserDetail]]
+  def create(user: UserDetail): Future[Option[Long]]
 
   def delete(id: Long): Future[Int]
 
-  def update(user: UserDetail) : Future[OperationResult[UserDetail]]
+  def update(user: UserDetail) : Future[Option[UserDetail]]
 
   def getById(id: Long): Future[Option[UserDetail]]
 

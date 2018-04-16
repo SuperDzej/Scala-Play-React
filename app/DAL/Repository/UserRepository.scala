@@ -6,20 +6,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import javax.inject._
 
-import DAL.Helpers.OperationResult
 import DAL.Models.User
 import DAL.Traits._
-import DAL.Migrations.UserTable
+import DAL.TableMapping.UserTable
 
 class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
   val users = TableQuery[UserTable]
 
-  def create(user: User): Future[OperationResult[Long]] = {
+  def create(user: User): Future[Option[Long]] = {
     val userIdQuery = (users returning users.map(_.id)) += user
     runCommand(userIdQuery).map(userId => {
-      OperationResult[Long](isSuccess = true, "User successfully created", Some(userId))
+      Some(userId)
     }).recover {
-        case ex: Exception => OperationResult[Long](isSuccess = false, ex.getMessage, None)
+        case _: Exception => None
       }
   }
 
@@ -27,21 +26,18 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
     runCommand(users.filter(_.id === id).delete)
   }
 
-  def update(user: User) : Future[OperationResult[User]] = {
+  def update(user: User) : Future[Option[User]] = {
     val mapUpdateAction = users.filter(_.id === user.id)
       .map(dbUser => (dbUser.firstName, dbUser.lastName, dbUser.username, dbUser.isVerified, dbUser.isDisabled))
       .update( (user.firstName, user.lastName, user.username, user.isVerified, user.isDisabled))
 
     runCommand(mapUpdateAction)
       .map(updateCount => {
-        if (updateCount <= 0) {
-          OperationResult(isSuccess = false, "User not updated", operationObject = Some(user))
-        } else {
-          OperationResult(isSuccess = true, "User successfully updated", operationObject = Some(user))
-        }
+        if (updateCount <= 0) None
+        else Some(user)
       })
       .recover {
-        case ex : Exception => OperationResult[User](isSuccess = false, ex.getMessage, None)
+        case _ : Exception => None
     }
   }
 

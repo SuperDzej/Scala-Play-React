@@ -28,7 +28,11 @@ class UserReportService @Inject()(private val userReportRepository: IUserReportR
 
         val addUserReportF = userReportRepository.create(dbUser)
         val addUserReportResult = Await.result(addUserReportF,  timeoutDuration)
-        addUserReportResult.message
+        addUserReportResult match {
+          case Some(0) => "No user report created"
+          case Some(_) => "User report created"
+          case None => "No user report created"
+        }
     }
   }
 
