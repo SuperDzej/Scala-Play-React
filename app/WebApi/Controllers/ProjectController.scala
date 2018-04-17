@@ -1,6 +1,6 @@
 package WebApi.Controllers
 
-import BLL.Models.ProjectModel
+import BLL.Models.{ProjectModel, SkillModel}
 import javax.inject._
 import play.api.libs.json._
 import play.api.mvc._
@@ -20,6 +20,11 @@ class ProjectController @Inject()(cc: ControllerComponents, projectService: Proj
     }
   }
 
+  def get = Action {
+    val projects = projectService.get
+    Ok(Json.toJson(projects))
+  }
+
   def post: Action[JsValue] = Action(parse.json) { request =>
     val jsonUserFromBody = request.body.as[ProjectModel]
 
@@ -27,9 +32,16 @@ class ProjectController @Inject()(cc: ControllerComponents, projectService: Proj
     Ok(addResult)
   }
 
-  def delete(projectId: Long) = Action {
-    val deletedProjectId: Long = projectService.delete(projectId)
-    if(deletedProjectId == projectId) {
+  def addSkills(id: Long): Action[JsValue] = Action(parse.json) { request =>
+    val jsonSkillsFromBody = request.body.as[Seq[Long]]
+
+    val addResult:String = projectService.addSkills(id, jsonSkillsFromBody)
+    Ok(addResult)
+  }
+
+  def delete(id: Long) = Action {
+    val deletedProjectId: Long = projectService.delete(id)
+    if(deletedProjectId == id) {
       Ok("Project deleted")
     } else {
       NotFound("No project with id for deletion")

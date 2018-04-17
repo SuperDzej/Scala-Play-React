@@ -71,15 +71,13 @@ CREATE TABLE "project" (
   "name" VARCHAR(100) NOT NULL,
   "url" TEXT NOT NULL,
   "startDate" TIMESTAMP NOT NULL,
-  "endDate" TIMESTAMP NOT NULL
+  "endDate" TIMESTAMP NULL
 );
 
 CREATE TABLE "project_skill" (
   "projectId" SERIAL REFERENCES "project"(id),
   "skillId" SERIAL REFERENCES "skill"(id)
 );
-
-
 
 # --- !Downs
 DROP TABLE "user";

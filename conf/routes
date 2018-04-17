@@ -43,7 +43,14 @@ POST        /api/skills                             WebApi.Controllers.SkillCont
 
 GET         /api/projects/:id                       WebApi.Controllers.ProjectController.getById(id: Long)
 
+GET         /api/projects                           WebApi.Controllers.ProjectController.get
+
+# To be restful we send skills on separate route then project creation
+POST        /api/projects/:id/skills                WebApi.Controllers.ProjectController.addSkills(id: Long)
+
 POST        /api/projects                           WebApi.Controllers.ProjectController.post
+
+DELETE      /api/projects/:id                       WebApi.Controllers.ProjectController.delete(id: Long)
 
 # Serve static assets under public directory
 GET     /*file                                      WebApi.Controllers.FrontendController.assetOrDefault(file)

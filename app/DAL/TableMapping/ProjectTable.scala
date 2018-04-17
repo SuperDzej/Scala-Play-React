@@ -12,7 +12,7 @@ class ProjectTable(tag: Tag) extends Table[Project](tag, "project") {
   def description = column[String]("description")
   def url = column[String]("url")
   def startDate = column[Timestamp]("startDate")
-  def endDate = column[Timestamp]("endDate")
+  def endDate = column[Option[Timestamp]]("endDate")
 
   override def * =
     (id, name, description, url, startDate, endDate) <>(Project.tupled, Project.unapply)

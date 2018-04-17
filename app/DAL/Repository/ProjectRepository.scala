@@ -9,8 +9,11 @@ import DAL.Models._
 import DAL.TableMapping._
 import DAL.Traits.IProjectRepository
 
+import scala.collection.mutable
+
 class ProjectRepository @Inject()() extends BaseRepository() with IProjectRepository {
   val projects = TableQuery[ProjectTable]
+  val skills = TableQuery[SkillTable]
   val projectSkills = TableQuery[ProjectSkillTable]
 
   def create(project: Project): Future[Option[Long]] = {
@@ -22,17 +25,15 @@ class ProjectRepository @Inject()() extends BaseRepository() with IProjectReposi
     }
   }
 
-  def createWithSkills(project: Project, skills: Seq[Long]): Future[Option[Long]] = {
-    val userIdQuery = (projects returning projects.map(_.id)) += project
+  def addSkills(project: Project, skills: Seq[Long]): Future[Option[Long]] = {
     val query = for {
-      projectId <- userIdQuery
-      _ <- projectSkills ++= skills.map(skill => ProjectSkill(projectId, skill))
-    } yield projectId
+      projectSKillsM <- projectSkills ++= skills.map(skill => ProjectSkill(skillId = skill, projectId = project.id))
+    } yield projectSKillsM
 
-    runCommand(query).map(userId => {
-      Some(userId)
+    runCommand(query).map(projectSkillsAdded => {
+      Some(projectSkillsAdded.get.asInstanceOf[Long])
     }).recover {
-      case _: Exception => None
+      case e: Exception => println("Ex: " + e.getLocalizedMessage); None
     }
   }
 
@@ -65,5 +66,31 @@ class ProjectRepository @Inject()() extends BaseRepository() with IProjectReposi
 
   def get: Future[Seq[Project]] = {
     runCommand(projects.result)
+  }
+
+  def getWithSkills: Future[Seq[(Project, mutable.ArrayBuffer[Skill])]] = {
+    val crossJoin = (for {
+      (project, opSkills) <- projects join (projectSkills join skills on (_.skillId === _.id)) on (_.id === _._1.projectId)
+
+    } yield(project, opSkills._2)).result
+
+    runCommand(crossJoin).map(projectSkillsMapping => {
+
+      var projectSkills = mutable.Seq[(Project, mutable.ArrayBuffer[Skill])]()
+      projectSkillsMapping.map(pSkills => {
+        val ele = projectSkills.filter(r => r._1.id == pSkills._1.id)
+        if(ele.nonEmpty) {
+          ele.head._2 += pSkills._2
+        } else {
+          val skills = mutable.ArrayBuffer() += pSkills._2
+          projectSkills = projectSkills :+ new Tuple2[Project, mutable.ArrayBuffer[Skill]](pSkills._1, skills)
+        }
+
+        ele
+      })
+      projectSkills
+    }).recover {
+      case e: Exception => println("Ex: " + e.getLocalizedMessage); Seq.empty
+    }
   }
 }
