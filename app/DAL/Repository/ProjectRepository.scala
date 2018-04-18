@@ -9,8 +9,6 @@ import DAL.Models._
 import DAL.TableMapping._
 import DAL.Traits.IProjectRepository
 
-import scala.collection.mutable
-
 class ProjectRepository @Inject()() extends BaseRepository() with IProjectRepository {
   val projects = TableQuery[ProjectTable]
   val skills = TableQuery[SkillTable]
@@ -27,7 +25,8 @@ class ProjectRepository @Inject()() extends BaseRepository() with IProjectReposi
 
   def addSkills(project: Project, skills: Seq[Long]): Future[Option[Long]] = {
     val query = for {
-      projectSKillsM <- projectSkills ++= skills.map(skill => ProjectSkill(skillId = skill, projectId = project.id))
+      projectSKillsM <- projectSkills ++= skills.map(skill =>
+        ProjectSkill(skillId = skill, projectId = project.id))
     } yield projectSKillsM
 
     runCommand(query).map(projectSkillsAdded => {
@@ -56,41 +55,48 @@ class ProjectRepository @Inject()() extends BaseRepository() with IProjectReposi
     runCommand(projects.filter(_.id === id).delete)
   }
 
-  def getById(id: Long): Future[Option[Project]] = {
-    runCommand(projects.filter(_.id === id).result).map(_.headOption)
+  def getById(id: Long): Future[Option[(Project, Seq[Skill])]] = {
+    val join = projectSkills
+      .join(skills).on(_.skillId === _.id)
+      .join(projects).on(_._1.skillId === _.id)
+      .filter(_._2.id === id)
+      .result
+
+    runCommand(join)
+      .map(ps => {
+        ps.groupBy(_._2)
+          .map(ele => (ele._1, ele._2.map(_._1._2)))
+          .headOption
+      })
   }
 
   def getWithOffsetAndLimit(offset: Long, limit: Long): Future[Seq[Project]] = {
     runCommand(projects.drop(offset).take(limit).result)
   }
 
-  def get: Future[Seq[Project]] = {
-    runCommand(projects.result)
-  }
-
-  def getWithSkills: Future[Seq[(Project, mutable.ArrayBuffer[Skill])]] = {
+  def get: Future[Seq[(Project, Seq[Skill])]] = {
     val crossJoin = (for {
       (project, opSkills) <- projects join (projectSkills join skills on (_.skillId === _.id)) on (_.id === _._1.projectId)
-
     } yield(project, opSkills._2)).result
 
-    runCommand(crossJoin).map(projectSkillsMapping => {
-
-      var projectSkills = mutable.Seq[(Project, mutable.ArrayBuffer[Skill])]()
-      projectSkillsMapping.map(pSkills => {
-        val ele = projectSkills.filter(r => r._1.id == pSkills._1.id)
-        if(ele.nonEmpty) {
-          ele.head._2 += pSkills._2
-        } else {
-          val skills = mutable.ArrayBuffer() += pSkills._2
-          projectSkills = projectSkills :+ new Tuple2[Project, mutable.ArrayBuffer[Skill]](pSkills._1, skills)
-        }
-
-        ele
-      })
-      projectSkills
+    runCommand(crossJoin).map(projectsSkillsMapping => {
+      projectsSkillsMapping
+        .groupBy(_._1)
+        .map(ele => (ele._1, ele._2.map(_._2)))
+        .toSeq
+        .sortWith(_._1.id < _._1.id)
     }).recover {
-      case e: Exception => println("Ex: " + e.getLocalizedMessage); Seq.empty
+      case _: Exception => Seq.empty
     }
   }
 }
+
+/*val crossJoin = (for {
+  (project, opSkills) <- projects join (projectSkills join skills on (_.skillId === _.id)) on (_.id === _._1.projectId) filter(_._1.id === id)
+} yield(project, opSkills._2)).result
+
+val sa = runCommand(crossJoin).map(projectWithSkills => {
+  projectWithSkills.groupBy(_._1)
+    .map(ele => (ele._1, ele._2.map(_._2)))
+    .headOption
+})*/

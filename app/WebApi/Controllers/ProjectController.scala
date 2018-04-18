@@ -1,6 +1,6 @@
 package WebApi.Controllers
 
-import BLL.Models.{ProjectModel, SkillModel}
+import BLL.Models.ProjectModel
 import javax.inject._
 import play.api.libs.json._
 import play.api.mvc._

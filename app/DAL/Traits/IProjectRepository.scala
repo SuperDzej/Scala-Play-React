@@ -2,7 +2,6 @@ package DAL.Traits
 
 import DAL.Models.{Project, Skill}
 
-import scala.collection.mutable
 import scala.concurrent.Future
 
 trait IProjectRepository {
@@ -14,9 +13,7 @@ trait IProjectRepository {
 
   def update(project: Project) : Future[Option[Project]]
 
-  def getById(id: Long): Future[Option[Project]]
+  def getById(id: Long): Future[Option[(Project, Seq[Skill])]]
 
-  def get: Future[Seq[Project]]
-
-  def getWithSkills: Future[Seq[(Project, mutable.ArrayBuffer[Skill])]]
+  def get: Future[Seq[(Project, Seq[Skill])]]
 }

@@ -52,5 +52,11 @@ POST        /api/projects                           WebApi.Controllers.ProjectCo
 
 DELETE      /api/projects/:id                       WebApi.Controllers.ProjectController.delete(id: Long)
 
+# Vacation related routes
+
+GET         /api/vacations/:id                      WebApi.Controllers.VacationController.getById(id: Long)
+
+POST        /api/vacations                          WebApi.Controllers.VacationController.post
+
 # Serve static assets under public directory
 GET     /*file                                      WebApi.Controllers.FrontendController.assetOrDefault(file)

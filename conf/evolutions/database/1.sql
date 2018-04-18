@@ -48,8 +48,7 @@ CREATE TABLE "user_report" (
 CREATE TABLE "user_interest" (
   "id" SERIAL PRIMARY KEY,
   "description" TEXT NOT NULL,
-  "reason" VARCHAR(100) NOT NULL,
-  "date" TIMESTAMP NOT NULL,
+  "name" VARCHAR(100) NOT NULL,
   "userId" SERIAL REFERENCES "user"(id)
 );
 
@@ -79,6 +78,19 @@ CREATE TABLE "project_skill" (
   "skillId" SERIAL REFERENCES "skill"(id)
 );
 
+CREATE TABLE "vacation" (
+  "id" SERIAL PRIMARY KEY,
+  "description" TEXT NOT NULL,
+  "category" VARCHAR(50) NOT NULL,
+  "startDate" TIMESTAMP NOT NULL,
+  "endDate" TIMESTAMP NULL
+);
+
+CREATE TABLE "user_vacation" (
+  "vacationId" SERIAL REFERENCES "vacation"(id)
+  "userId" SERIAL REFERENCES "user"(id)
+);
+
 # --- !Downs
 DROP TABLE "user";
 
@@ -99,3 +111,7 @@ DROP TABLE "user_skill";
 DROP TABLE "project";
 
 DROP TABLE "project_skill";
+
+DROP TABLE "vacation";
+
+DROP TABLE "user_vacation";
