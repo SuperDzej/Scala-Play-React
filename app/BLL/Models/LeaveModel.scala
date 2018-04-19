@@ -5,11 +5,9 @@ import java.text.SimpleDateFormat
 
 import play.api.libs.json._
 
-case class ProjectModel (id: Option[Long], name: String, description: String, url: String,
-                         startDate: Timestamp, endDate: Option[Timestamp], skills: Option[Seq[SkillModel]])
+case class LeaveModel(id: Option[Long], description: String, category: String, startDate: Timestamp, endDate: Timestamp)
 
-object ProjectModel {
-
+object LeaveModel {
   implicit object timestampFormat extends Format[Timestamp] {
     val format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     def reads(json: JsValue): JsSuccess[Timestamp] = {
@@ -20,7 +18,6 @@ object ProjectModel {
 
     def writes(ts: Timestamp) = JsString(format.format(ts))
   }
-
-  implicit val projectWrites: Writes[ProjectModel] = Json.writes[ProjectModel]
-  implicit val projectReads: Reads[ProjectModel] = Json.reads[ProjectModel]
+  implicit val vacationsRead: Reads[LeaveModel] = Json.reads[LeaveModel]
+  implicit val vacationsWrite: Writes[LeaveModel] = Json.writes[LeaveModel]
 }

@@ -1,6 +1,6 @@
 package BLL.Services
 
-import BLL.Converters.SkillConverter
+import BLL.Converters
 import BLL.Models.SkillModel
 import DAL.Repository.SkillRepository
 import javax.inject.Inject
@@ -12,34 +12,31 @@ class SkillService @Inject()(skillRepository: SkillRepository) {
   private val timeoutDuration = 2.seconds
 
   def create(skillM: SkillModel): String = {
-    val dbSkill = SkillConverter.skillModelToSkill(skillM)
+    val dbSkill = Converters.skillModelToSkill(skillM)
 
-    val addUserReportF = skillRepository.create(dbSkill)
-    val addUserReportResult = Await.result(addUserReportF, timeoutDuration)
-    addUserReportResult match {
+    val addSkillF = skillRepository.create(dbSkill)
+    val addSkill = Await.result(addSkillF, timeoutDuration)
+    addSkill match {
       case Some(0) | None => "No skill created"
       case Some(_) => "Skill created"
     }
   }
 
   def delete(id: Long): Int = {
-    val deleteUserF = skillRepository.delete(id)
-    val deleteUserId = Await.result(deleteUserF, timeoutDuration)
-    deleteUserId
+    Await.result(skillRepository.delete(id), timeoutDuration)
   }
 
   def getById(id: Long): Option[SkillModel] = {
-    val opUser = Await.result(skillRepository.getById(id), timeoutDuration)
+    val opSkill = Await.result(skillRepository.getById(id), timeoutDuration)
 
-    opUser match {
-      case Some(dbSkill) => Some(SkillConverter.skillToSkillModel(dbSkill))
+    opSkill match {
+      case Some(skill) => Some(Converters.skillToSkillModel(skill))
       case None => None
     }
   }
 
   def get: Seq[SkillModel] = {
     val projects = Await.result(skillRepository.get, timeoutDuration)
-
-    projects.map(skill => SkillConverter.skillToSkillModel(skill))
+    projects.map(Converters.skillToSkillModel)
   }
 }

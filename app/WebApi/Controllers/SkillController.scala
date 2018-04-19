@@ -6,30 +6,40 @@ import play.api.mvc._
 import BLL.Models._
 import BLL.Services._
 import DAL.Repository.SkillRepository
+import WebApi.Models.RestResponse
 
 @Singleton
-class SkillController @Inject()(cc: ControllerComponents, skillService: SkillService,
+class SkillController @Inject()(cc: ControllerComponents,
+                                skillService: SkillService,
                                 skillRepository: SkillRepository)
   extends AbstractController(cc) {
 
+  def get = Action {
+    val skills = skillService.get
+    Ok(Json.toJson(new RestResponse(Json.toJson(skills), None).toJson))
+  }
+
   def getById(id: Long) = Action {
-    val user: Option[SkillModel] = skillService.getById(id)
-    user match {
-      case userM: Some[SkillModel] => Ok(Json.toJson(userM))
-      case None => NotFound("No user with id")
+    val skill: Option[SkillModel] = skillService.getById(id)
+    skill match {
+      case skillM: Some[SkillModel] => Ok(Json.toJson(skillM))
+      case None => NotFound("No skill with id")
     }
   }
 
   def post: Action[JsValue] = Action(parse.json) { request =>
-    val jsonUserFromBody = request.body.as[SkillModel]
-
-    val addResult: String = skillService.create(jsonUserFromBody)
-    Ok(Json.toJson(addResult))
+    val skillModelValidation = request.body.validate[SkillModel]
+    if(skillModelValidation.isSuccess) {
+      val skillModel = request.body.as[SkillModel]
+      Created(Json.toJson(skillService.create(skillModel)))
+    } else {
+      BadRequest("Invalid data sent")
+    }
   }
 
-  def delete(userId: Long) = Action {
-    val deletedUserId: Int = skillService.delete(userId)
-    if(deletedUserId == userId) {
+  def delete(id: Long) = Action {
+    val deletedUserId: Int = skillService.delete(id)
+    if(deletedUserId == id) {
       Ok("User deleted")
     } else {
       NotFound("No user with id for deletion")

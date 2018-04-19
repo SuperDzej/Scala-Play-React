@@ -14,8 +14,8 @@ class SkillRepository @Inject()() extends BaseRepository() with ISkillRepository
 
   def create(skill: Skill): Future[Option[Long]] = {
     val skillIdQuery = (skills returning skills.map(_.id)) += skill
-    runCommand(skillIdQuery).map(userId => {
-       Some(userId)
+    runCommand(skillIdQuery).map(skillId => {
+       Some(skillId)
     }).recover {
       case _: Exception => None
     }

@@ -1,6 +1,6 @@
 package BLL.Services
 
-import BLL.Converters.{ProjectConverter, SkillConverter}
+import BLL.Converters
 import javax.inject._
 
 import scala.concurrent.duration._
@@ -12,11 +12,11 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
   private val timeoutDuration = 3.seconds
 
   def create(projectM: ProjectModel): String = {
-      val dbProject = ProjectConverter.projectModelToProject(projectM)
+      val dbProject = Converters.projectModelToProject(projectM)
 
-      val addUserReportF = projectRepository.create(dbProject)
-      val addUserReportResult = Await.result(addUserReportF, timeoutDuration)
-      addUserReportResult match {
+      val addProjectF = projectRepository.create(dbProject)
+      val addProject = Await.result(addProjectF, timeoutDuration)
+      addProject match {
         case Some(0L) | None => "No project created"
         case Some(_) => "Project created"
       }
@@ -27,9 +27,9 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
 
     oProject match {
       case Some(project) =>
-        val addUserReportF = projectRepository.addSkills(project._1, skills)
-        val addUserReportResult = Await.result(addUserReportF, timeoutDuration)
-        addUserReportResult match {
+        val addProjectSkillF = projectRepository.addSkills(project._1, skills)
+        val addProjectSkill = Await.result(addProjectSkillF, timeoutDuration)
+        addProjectSkill match {
           case Some(0L) | None => "No project skills added"
           case Some(_) => "Project skills added"
         }
@@ -38,8 +38,7 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
   }
 
   def delete(id: Long): Int = {
-    val deleteUserF = projectRepository.delete(id)
-    Await.result(deleteUserF, timeoutDuration)
+    Await.result(projectRepository.delete(id), timeoutDuration)
   }
 
   def getById(id: Long): Option[ProjectModel] = {
@@ -47,8 +46,8 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
 
     opUser match {
       case Some(project) =>
-        val skills = project._2.map(SkillConverter.skillToSkillModel)
-        Some(ProjectConverter.projectToProjectModel(project._1, Some(skills)))
+        val skills = project._2.map(Converters.skillToSkillModel)
+        Some(Converters.projectToProjectModel(project._1, Some(skills)))
       case None => None
     }
   }
@@ -56,8 +55,8 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
   def get: Seq[ProjectModel] = {
     val projects = Await.result(projectRepository.get, timeoutDuration)
     projects.map(project => {
-      val skills = project._2.map(SkillConverter.skillToSkillModel)
-      ProjectConverter.projectToProjectModel(project._1, Some(skills))
+      val skills = project._2.map(Converters.skillToSkillModel)
+      Converters.projectToProjectModel(project._1, Some(skills))
     })
   }
 }

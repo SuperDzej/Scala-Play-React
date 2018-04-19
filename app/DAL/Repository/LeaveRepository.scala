@@ -9,13 +9,13 @@ import DAL.Models._
 import DAL.TableMapping._
 import DAL.Traits.IVacationRepository
 
-class VacationRepository @Inject()() extends BaseRepository() with IVacationRepository {
-  val vacations = TableQuery[VacationTable]
+class LeaveRepository @Inject()() extends BaseRepository() with IVacationRepository {
+  val vacations = TableQuery[LeaveTable]
 
-  def create(vacation: Vacation): Future[Option[Long]] = {
-    val skillIdQuery = (vacations returning vacations.map(_.id)) += vacation
-    runCommand(skillIdQuery).map(userId => {
-      Some(userId)
+  def create(vacation: Leave): Future[Option[Long]] = {
+    val vacationIdQuery = (vacations returning vacations.map(_.id)) += vacation
+    runCommand(vacationIdQuery).map(vacationId => {
+      Some(vacationId)
     }).recover {
       case _: Exception => None
     }
@@ -25,11 +25,11 @@ class VacationRepository @Inject()() extends BaseRepository() with IVacationRepo
     runCommand(vacations.filter(_.id === id).delete)
   }
 
-  def getById(id: Long): Future[Option[Vacation]] = {
+  def getById(id: Long): Future[Option[Leave]] = {
     runCommand(vacations.filter(_.id === id).result).map(_.headOption)
   }
 
-  def get: Future[Seq[Vacation]] = {
+  def get: Future[Seq[Leave]] = {
     runCommand(vacations.result)
   }
 }

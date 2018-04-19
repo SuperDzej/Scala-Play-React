@@ -6,9 +6,11 @@ import play.api.libs.json._
 import play.api.mvc._
 import BLL.Services._
 import DAL.Repository.ProjectRepository
+import WebApi.Models.RestResponse
 
 @Singleton
-class ProjectController @Inject()(cc: ControllerComponents, projectService: ProjectService,
+class ProjectController @Inject()(cc: ControllerComponents,
+                                  projectService: ProjectService,
                                   projectRepository: ProjectRepository)
   extends AbstractController(cc) {
 
@@ -22,21 +24,23 @@ class ProjectController @Inject()(cc: ControllerComponents, projectService: Proj
 
   def get = Action {
     val projects = projectService.get
-    Ok(Json.toJson(projects))
+    Ok(Json.toJson(new RestResponse(Json.toJson(projects), None).toJson))
   }
 
   def post: Action[JsValue] = Action(parse.json) { request =>
-    val jsonUserFromBody = request.body.as[ProjectModel]
-
-    val addResult:String = projectService.create(jsonUserFromBody)
-    Ok(addResult)
+    val projectModelValidation = request.body.validate[ProjectModel]
+    if(projectModelValidation.isSuccess) {
+      val projectModel = request.body.as[ProjectModel]
+      Created(Json.toJson(projectService.create(projectModel)))
+    } else {
+      BadRequest("Invalid data sent")
+    }
   }
 
   def addSkills(id: Long): Action[JsValue] = Action(parse.json) { request =>
-    val jsonSkillsFromBody = request.body.as[Seq[Long]]
+    val skills = request.body.as[Seq[Long]]
 
-    val addResult:String = projectService.addSkills(id, jsonSkillsFromBody)
-    Ok(addResult)
+    Ok(projectService.addSkills(id, skills))
   }
 
   def delete(id: Long) = Action {

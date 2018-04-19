@@ -36,16 +36,7 @@ CREATE TABLE "user_detail" (
   "userId" SERIAL REFERENCES "user"(id)
 );
 
-CREATE TABLE "user_report" (
-  "id" SERIAL PRIMARY KEY,
-  "description" TEXT NOT NULL,
-  "reason" VARCHAR(100) NOT NULL,
-  "date" TIMESTAMP NOT NULL,
-  "userId" SERIAL REFERENCES "user"(id),
-  "reportedUserId" SERIAL REFERENCES "user"(id)
-);
-
-CREATE TABLE "user_interest" (
+CREATE TABLE "user_interesting_info" (
   "id" SERIAL PRIMARY KEY,
   "description" TEXT NOT NULL,
   "name" VARCHAR(100) NOT NULL,
@@ -61,7 +52,9 @@ CREATE TABLE "skill" (
 
 CREATE TABLE "user_skill" (
   "userId" SERIAL REFERENCES "user"(id),
-  "skillId" SERIAL REFERENCES "skill"(id)
+  "skillId" SERIAL REFERENCES "skill"(id),
+  "level" TEXT NULL,
+  "yearsExperience" TEXT NULL
 );
 
 CREATE TABLE "project" (
@@ -78,16 +71,26 @@ CREATE TABLE "project_skill" (
   "skillId" SERIAL REFERENCES "skill"(id)
 );
 
-CREATE TABLE "vacation" (
-  "id" SERIAL PRIMARY KEY,
-  "description" TEXT NOT NULL,
-  "category" VARCHAR(50) NOT NULL,
-  "startDate" TIMESTAMP NOT NULL,
-  "endDate" TIMESTAMP NULL
+CREATE TABLE "user_project" (
+  "userId" SERIAL REFERENCES "user"(id),
+  "projectId" SERIAL REFERENCES "project"(id)
 );
 
-CREATE TABLE "user_vacation" (
-  "vacationId" SERIAL REFERENCES "vacation"(id)
+CREATE TABLE "leave_category" (
+  "id" SERIAL PRIMARY KEY,
+  "name" TEXT NOT NULL,
+);
+
+CREATE TABLE "leave" (
+  "id" SERIAL PRIMARY KEY,
+  "description" TEXT NOT NULL,
+  "startDate" TIMESTAMP NOT NULL,
+  "endDate" TIMESTAMP NULL,
+  "categoryId" SERIAL REFERENCES "leave_categoryId"(id)
+);
+
+CREATE TABLE "user_leave" (
+  "leaveId" SERIAL REFERENCES "leave"(id),
   "userId" SERIAL REFERENCES "user"(id)
 );
 
@@ -111,6 +114,8 @@ DROP TABLE "user_skill";
 DROP TABLE "project";
 
 DROP TABLE "project_skill";
+
+DROP TABLE "user_project";
 
 DROP TABLE "vacation";
 

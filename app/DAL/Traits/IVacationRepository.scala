@@ -1,15 +1,15 @@
 package DAL.Traits
 
-import DAL.Models.Vacation
+import DAL.Models.Leave
 
 import scala.concurrent.Future
 
 trait IVacationRepository {
-  def create(vacation: Vacation): Future[Option[Long]]
+  def create(vacation: Leave): Future[Option[Long]]
 
   def delete(id: Long): Future[Int]
 
-  def getById(id: Long): Future[Option[Vacation]]
+  def getById(id: Long): Future[Option[Leave]]
 
-  def get: Future[Seq[Vacation]]
+  def get: Future[Seq[Leave]]
 }
