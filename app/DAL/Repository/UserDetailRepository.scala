@@ -7,12 +7,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
 import DAL.Models.{User, UserDetail}
 import DAL.Traits._
-import DAL.TableMapping.{UserDetailTable, UserTable}
 
 class UserDetailRepository @Inject()() extends BaseRepository() with IUserDetailRepository {
-  val usersDetails = TableQuery[UserDetailTable]
-  val users = TableQuery[UserTable]
-
   def create(userDetail: UserDetail): Future[Option[Long]] = {
     val userIdQuery = (usersDetails returning usersDetails.map(_.id)) += userDetail
     runCommand(userIdQuery)

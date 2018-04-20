@@ -1,5 +1,6 @@
 package DAL.Repository
 
+import DAL.TableMapping._
 import slick.dbio.{DBIOAction, NoStream}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
@@ -9,6 +10,17 @@ import scala.concurrent.Future
 class BaseRepository () {
   // We get config by name from application.config where db url is specified
   val db = Database.forConfig("postgresDatabase")
+
+  val users = TableQuery[UserTable]
+  val userSkills = TableQuery[UserSkillTable]
+  val userLeaves = TableQuery[UserLeaveTable]
+  val leaves = TableQuery[LeaveTable]
+  val projects = TableQuery[ProjectTable]
+  val skills = TableQuery[SkillTable]
+  val projectSkills = TableQuery[ProjectSkillTable]
+  val usersDetails = TableQuery[UserDetailTable]
+  val usersInterests = TableQuery[UserInterestTable]
+  val leaveCategories = TableQuery[LeaveCategoryTable]
   
   def getDatabaseConnection: JdbcProfile#Backend#Database = {
     db

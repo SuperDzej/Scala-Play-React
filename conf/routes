@@ -6,7 +6,6 @@
 GET     /                                           WebApi.Controllers.FrontendController.index()
 
 # User related routes
-
 GET         /api/users/:offset/:limit               WebApi.Controllers.UserController.getWitLimitAndOffset(offset: Long, limit: Long)
 
 POST        /api/users                              WebApi.Controllers.UserController.post
@@ -17,16 +16,16 @@ DELETE      /api/users/:id                          WebApi.Controllers.UserContr
 
 PUT         /api/users/:userId/details              WebApi.Controllers.UserController.updateDetails(userId: Long)
 
-POST        /api/users/:id/vacations                WebApi.Controllers.UserController.addVacations(id: Long)
+POST        /api/users/:id/leaves                   WebApi.Controllers.UserController.addLeaves(id: Long)
+
+POST        /api/users/:id/skills                   WebApi.Controllers.UserController.addSkills(id: Long)
 
 # Account related routes
-
 POST        /token                                  WebApi.Controllers.AccountController.generateToken
 
 GET         /account                                WebApi.Controllers.AccountController.index
 
 # Skills related routes
-
 GET         /api/skills                             WebApi.Controllers.SkillController.get
 
 GET         /api/skills/:id                         WebApi.Controllers.SkillController.getById(id: Long)
@@ -36,7 +35,6 @@ POST        /api/skills                             WebApi.Controllers.SkillCont
 DELETE      /api/skills/:id                         WebApi.Controllers.SkillController.delete(id: Long)
 
 # Project related routes
-
 GET         /api/projects/:id                       WebApi.Controllers.ProjectController.getById(id: Long)
 
 GET         /api/projects                           WebApi.Controllers.ProjectController.get
@@ -48,8 +46,7 @@ POST        /api/projects                           WebApi.Controllers.ProjectCo
 
 DELETE      /api/projects/:id                       WebApi.Controllers.ProjectController.delete(id: Long)
 
-# Vacation related routes
-
+# Leave related routes
 GET         /api/leaves                             WebApi.Controllers.LeaveController.get
 
 GET         /api/leaves/:id                         WebApi.Controllers.LeaveController.getById(id: Long)
@@ -58,5 +55,14 @@ POST        /api/leaves                             WebApi.Controllers.LeaveCont
 
 DELETE      /api/leaves/:id                         WebApi.Controllers.LeaveController.delete(id: Long)
 
+# Leave category routes
+GET         /api/leaves/categories                  WebApi.Controllers.LeaveCategoryController.get
+
+GET         /api/leaves/categories/:id              WebApi.Controllers.LeaveCategoryController.getById(id: Long)
+
+POST        /api/leaves/categories                  WebApi.Controllers.LeaveCategoryController.post
+
+DELETE      /api/leaves/categories/:id              WebApi.Controllers.LeaveCategoryController.delete(id: Long)
+
 # Serve static assets under public directory
-GET     /*file                                      WebApi.Controllers.FrontendController.assetOrDefault(file)
+GET         /*file                                  WebApi.Controllers.FrontendController.assetOrDefault(file)

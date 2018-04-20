@@ -1,3 +1,3 @@
 package DAL.Models
 
-case class Skill (id: Long, name: String, description: String, level: String)
+case class Skill (id: Long, name: String, description: String)

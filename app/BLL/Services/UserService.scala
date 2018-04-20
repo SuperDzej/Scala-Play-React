@@ -5,7 +5,7 @@ import javax.inject._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import BLL.Models._
+import BLL.Models.{OperationResult, _}
 import DAL.Models._
 import DAL.Traits._
 
@@ -28,8 +28,9 @@ class UserService @Inject()(private val userRepository: IUserRepository,
                             private val authService: AuthenticationService) {
   private val timeoutDuration = 2.seconds
 
-  def create(user: UserModel): String = {
-    user.password.fold("No user password provided")(password => {
+  def create(user: UserModel): OperationResult[Long] = {
+    user.password.fold(OperationResult[Long](isSuccess = false,
+      "No user password provided", 0L))(password => {
       val hashedPassword = authService.hashPassword(password)
       val dbUser = Converters.userModelToUser(user, hashedPassword)
 
@@ -39,16 +40,40 @@ class UserService @Inject()(private val userRepository: IUserRepository,
         val dbUserDetail = UserDetail(0L, description = "", country = "", religion = "", height = 0.0,
           weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResultId.get)
         val addUserDetailF = userDetailRepository.create(dbUserDetail)
-        val addUserDetailResult = Await.result(addUserDetailF,  timeoutDuration)
-        if (addUserDetailResult.getOrElse(0L) > 0L) {
-          "User created"
-        } else {
-          "User not created"
-        }
-      } else {
-        "User not created"
+        val addUserDetailId = Await.result(addUserDetailF,  timeoutDuration).getOrElse(0L)
+        if (addUserDetailId > 0L) OperationResult[Long](isSuccess = true, "User created", addUserDetailId)
+        else OperationResult[Long](isSuccess = false, "User not created", 0L)
       }
+      else OperationResult[Long](isSuccess = false, "User not created", 0L)
     })
+  }
+
+  def addSkills(userId: Long, skills: Seq[Long]): OperationResult[Long] = {
+    val oUser = Await.result(userRepository.getById(userId), timeoutDuration)
+
+    oUser match {
+      case Some(user) =>
+        val addUserSkill = Await.result(userRepository.addSkills(user, skills), timeoutDuration)
+        addUserSkill match {
+          case Some(0L) | None => OperationResult[Long](isSuccess = false, "No user skills added", 0L)
+          case Some(skillCount) => OperationResult[Long](isSuccess = true, "User skills added", skillCount)
+        }
+      case None => OperationResult[Long](isSuccess = false, "No user with specified id", 0L)
+    }
+  }
+
+  def addLeaves(userId: Long, skills: Seq[Long]): OperationResult[Long] = {
+    val oUser = Await.result(userRepository.getById(userId), timeoutDuration)
+
+    oUser match {
+      case Some(user) =>
+        val addUserSkill = Await.result(userRepository.addLeaves(user, skills), timeoutDuration)
+        addUserSkill match {
+          case Some(0L) | None => OperationResult[Long](isSuccess = false, "No user leaves added", 0L)
+          case Some(leavesCount) => OperationResult[Long](isSuccess = true, "User leaves added", leavesCount)
+        }
+      case None => OperationResult[Long](isSuccess = false,  "No user with specified id", 0L)
+    }
   }
 
   def updateDetails(userId: Long, userDetail: UserDetailModel): String = {

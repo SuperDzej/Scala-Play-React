@@ -10,6 +10,10 @@ import scala.concurrent.Future
 trait IUserRepository {
   def create(user: User): Future[Option[Long]]
 
+  def addSkills(user: User, skills: Seq[Long]): Future[Option[Long]]
+
+  def addLeaves(user: User, leaves: Seq[Long]): Future[Option[Long]]
+
   def delete(id: Long): Future[Int]
 
   def update(user: User) : Future[Option[User]]

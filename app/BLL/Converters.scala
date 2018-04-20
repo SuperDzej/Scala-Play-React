@@ -38,23 +38,30 @@ object Converters {
       url = projectModel.url, startDate = projectModel.startDate, endDate = projectModel.endDate)
   }
 
-  def skillToSkillModel(skill: Skill): SkillModel = {
+  def skillToSkillModel(skill: Skill, userSkill: Option[UserSkill]): SkillModel = {
     SkillModel(Some(skill.id), skill.name, skill.description,
-      skill.level)
+      None, None)
   }
 
   def skillModelToSkill(skillModel: SkillModel): Skill = {
-    Skill(skillModel.id.getOrElse(0L), name = skillModel.name, description = skillModel.description,
-      level = skillModel.level)
+    Skill(skillModel.id.getOrElse(0L), name = skillModel.name, description = skillModel.description)
   }
 
-  def vacationToVacationModel(vacation: Leave): LeaveModel = {
-    LeaveModel(Some(vacation.id), vacation.categoryId.toString, vacation.description,
-      vacation.startDate, vacation.endDate)
+  def leaveToLeaveModel(leave: Leave, categoryName: String): LeaveModel = {
+    LeaveModel(Some(leave.id), category = categoryName, description = leave.description,
+      startDate = leave.startDate, endDate = leave.endDate)
   }
 
-  def vacationModelToVacation(vacationModel: LeaveModel): Leave = {
-    Leave(vacationModel.id.getOrElse(0L), description = vacationModel.description, categoryId = 0L,
-      startDate = vacationModel.startDate, endDate = vacationModel.endDate)
+  def leaveModelToLeave(leaveModel: LeaveModel, categoryId: Long): Leave = {
+    Leave(leaveModel.id.getOrElse(0L), description = leaveModel.description, categoryId = categoryId,
+      startDate = leaveModel.startDate, endDate = leaveModel.endDate)
+  }
+
+  def leaveCategoryToLeaveCategoryModel(leave: LeaveCategory): LeaveCategoryModel = {
+    LeaveCategoryModel(Some(leave.id), leave.name.toString)
+  }
+
+  def leaveCategoryModelToLeaveCategory(leaveModel: LeaveCategoryModel): LeaveCategory = {
+    LeaveCategory(leaveModel.id.getOrElse(0L), name = leaveModel.name)
   }
 }

@@ -46,15 +46,14 @@ CREATE TABLE "user_interesting_info" (
 CREATE TABLE "skill" (
   "id" SERIAL PRIMARY KEY,
   "description" TEXT NOT NULL,
-  "name" VARCHAR(100) NOT NULL,
-  "level" VARCHAR(50) NOT NULL
+  "name" VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE "user_skill" (
   "userId" SERIAL REFERENCES "user"(id),
   "skillId" SERIAL REFERENCES "skill"(id),
   "level" TEXT NULL,
-  "yearsExperience" TEXT NULL
+  "yearsExperience" SMALLINT NOT NULL
 );
 
 CREATE TABLE "project" (
@@ -78,7 +77,7 @@ CREATE TABLE "user_project" (
 
 CREATE TABLE "leave_category" (
   "id" SERIAL PRIMARY KEY,
-  "name" TEXT NOT NULL,
+  "name" TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE "leave" (
@@ -86,7 +85,7 @@ CREATE TABLE "leave" (
   "description" TEXT NOT NULL,
   "startDate" TIMESTAMP NOT NULL,
   "endDate" TIMESTAMP NULL,
-  "categoryId" SERIAL REFERENCES "leave_categoryId"(id)
+  "categoryId" SERIAL REFERENCES "leave_category"(id)
 );
 
 CREATE TABLE "user_leave" (
@@ -105,7 +104,7 @@ DROP TABLE "user_detail";
 
 DROP TABLE "user_report";
 
-DROP TABLE "user_interest";
+DROP TABLE "user_interesting_info";
 
 DROP TABLE "skill";
 
@@ -117,6 +116,8 @@ DROP TABLE "project_skill";
 
 DROP TABLE "user_project";
 
-DROP TABLE "vacation";
+DROP TABLE "leave_category";
 
-DROP TABLE "user_vacation";
+DROP TABLE "leave";
+
+DROP TABLE "user_leave";

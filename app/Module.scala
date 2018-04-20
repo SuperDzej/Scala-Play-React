@@ -22,6 +22,7 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
     bind(classOf[IUserDetailRepository]).to(classOf[UserDetailRepository])
     bind(classOf[IProjectRepository]).to(classOf[ProjectRepository])
     bind(classOf[ISkillRepository]).to(classOf[SkillRepository])
-    bind(classOf[IVacationRepository]).to(classOf[LeaveRepository])
+    bind(classOf[ILeaveRepository]).to(classOf[LeaveRepository])
+    bind(classOf[ILeaveCategoryRepository]).to(classOf[LeaveCategoryRepository])
   }
 }

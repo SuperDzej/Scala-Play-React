@@ -5,14 +5,11 @@ import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
-import DAL.Models.UserInterest
+import DAL.Models.UserInterestingInfo
 import DAL.Traits._
-import DAL.TableMapping.UserInterestTable
 
 class UserInterestRepository @Inject()() extends BaseRepository() with IUserInterestRepository {
-  val usersInterests = TableQuery[UserInterestTable]
-
-  def create(userInterest: UserInterest): Future[Option[Long]] = {
+  def create(userInterest: UserInterestingInfo): Future[Option[Long]] = {
     val userInterestIdQuery = (usersInterests returning usersInterests.map(_.id)) += userInterest
     runCommand(userInterestIdQuery)
       .map(userId =>  Some(userId))
@@ -25,7 +22,7 @@ class UserInterestRepository @Inject()() extends BaseRepository() with IUserInte
     runCommand(usersInterests.filter(_.id === id).delete)
   }
 
-  def update(user: UserInterest) : Future[Option[UserInterest]] = {
+  def update(user: UserInterestingInfo) : Future[Option[UserInterestingInfo]] = {
     val mapUpdateAction = usersInterests.filter(_.id === user.id)
       .map(dbUser => (dbUser.description, dbUser.name))
       .update( (user.description, user.name))
@@ -43,11 +40,11 @@ class UserInterestRepository @Inject()() extends BaseRepository() with IUserInte
     }
   }
 
-  def getById(id: Long): Future[Option[UserInterest]] = {
+  def getById(id: Long): Future[Option[UserInterestingInfo]] = {
     runCommand(usersInterests.filter(_.id === id).result).map(_.headOption)
   }
 
-  def get: Future[Seq[UserInterest]] = {
+  def get: Future[Seq[UserInterestingInfo]] = {
     runCommand(usersInterests.result)
   }
 }

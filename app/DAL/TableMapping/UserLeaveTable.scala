@@ -3,7 +3,7 @@ package DAL.TableMapping
 import slick.jdbc.PostgresProfile.api._
 import DAL.Models.UserLeave
 
-class UserLeaveTable(tag: Tag) extends Table[UserLeave](tag, "project_skill") {
+class UserLeaveTable(tag: Tag) extends Table[UserLeave](tag, "user_leave") {
   val users = TableQuery[UserTable]
   val leaves = TableQuery[LeaveTable]
 

@@ -6,12 +6,9 @@ import slick.jdbc.PostgresProfile.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
 import DAL.Models._
-import DAL.TableMapping._
 import DAL.Traits.ISkillRepository
 
 class SkillRepository @Inject()() extends BaseRepository() with ISkillRepository {
-  val skills = TableQuery[SkillTable]
-
   def create(skill: Skill): Future[Option[Long]] = {
     val skillIdQuery = (skills returning skills.map(_.id)) += skill
     runCommand(skillIdQuery).map(skillId => {

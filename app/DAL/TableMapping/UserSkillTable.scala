@@ -12,7 +12,9 @@ class UserSkillTable(tag: Tag) extends Table[UserSkill](tag, "user_skill") {
     onUpdate = ForeignKeyAction.Restrict, onDelete = ForeignKeyAction.Cascade)
   def skillId: Rep[Long] = column[Long]("skillId")
   def skillFK = foreignKey("skillId_fk", skillId, skills)(_.id)
+  def level = column[String]("level")
+  def yearsExperience = column[Short]("yearsExperience")
 
   override def * =
-    (userId, skillId) <>(UserSkill.tupled, UserSkill.unapply)
+    (userId, skillId, level, yearsExperience) <>(UserSkill.tupled, UserSkill.unapply)
 }

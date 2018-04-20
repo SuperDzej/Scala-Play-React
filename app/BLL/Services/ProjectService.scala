@@ -11,14 +11,14 @@ import DAL.Traits._
 class ProjectService @Inject()(private val projectRepository: IProjectRepository) {
   private val timeoutDuration = 3.seconds
 
-  def create(projectM: ProjectModel): String = {
+  def create(projectM: ProjectModel): Long = {
       val dbProject = Converters.projectModelToProject(projectM)
 
       val addProjectF = projectRepository.create(dbProject)
       val addProject = Await.result(addProjectF, timeoutDuration)
       addProject match {
-        case Some(0L) | None => "No project created"
-        case Some(_) => "Project created"
+        case Some(0L) | None => 0L
+        case Some(projectId) => projectId
       }
   }
 
@@ -27,8 +27,7 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
 
     oProject match {
       case Some(project) =>
-        val addProjectSkillF = projectRepository.addSkills(project._1, skills)
-        val addProjectSkill = Await.result(addProjectSkillF, timeoutDuration)
+        val addProjectSkill = Await.result(projectRepository.addSkills(project._1, skills), timeoutDuration)
         addProjectSkill match {
           case Some(0L) | None => "No project skills added"
           case Some(_) => "Project skills added"
@@ -46,7 +45,7 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
 
     opUser match {
       case Some(project) =>
-        val skills = project._2.map(Converters.skillToSkillModel)
+        val skills = project._2.map(Converters.skillToSkillModel(_, None))
         Some(Converters.projectToProjectModel(project._1, Some(skills)))
       case None => None
     }
@@ -55,7 +54,7 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
   def get: Seq[ProjectModel] = {
     val projects = Await.result(projectRepository.get, timeoutDuration)
     projects.map(project => {
-      val skills = project._2.map(Converters.skillToSkillModel)
+      val skills = project._2.map(Converters.skillToSkillModel(_, None))
       Converters.projectToProjectModel(project._1, Some(skills))
     })
   }

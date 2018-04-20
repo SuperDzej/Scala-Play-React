@@ -31,7 +31,9 @@ class UserController @Inject()(cc: ControllerComponents,
     val userBodyValidation = request.body.validate[UserModel]
     if(userBodyValidation.isSuccess) {
       val userModel = request.body.as[UserModel]
-      Created(Json.toJson(userService.create(userModel)))
+      val createResult = userService.create(userModel)
+      if(createResult.isSuccess) Created(Json.toJson(createResult.result))
+      else BadRequest(createResult.message)
     } else {
       BadRequest("Invalid data sent")
     }
@@ -53,7 +55,29 @@ class UserController @Inject()(cc: ControllerComponents,
     }
   }
 
-  def addVacations(id: Long) = Action {
-    NotFound
+  def addLeaves(id: Long): Action[JsValue] = Action(parse.json) { request =>
+    val userLeavesBodyValidation = request.body.validate[Seq[Long]]
+    if(userLeavesBodyValidation.isSuccess) {
+      val leaves = request.body.as[Seq[Long]]
+      val addLeavesResult = userService.addLeaves(id, leaves)
+
+      if(addLeavesResult.isSuccess) Created(Json.toJson(addLeavesResult.result))
+      else BadRequest(addLeavesResult.message)
+    } else {
+      NotFound(userLeavesBodyValidation.isSuccess.toString)
+    }
+  }
+
+  def addSkills(id: Long): Action[JsValue] = Action(parse.json) { request =>
+    val userSkillsBodyValidation = request.body.validate[Seq[Long]]
+    if(userSkillsBodyValidation.isSuccess) {
+      val skills = request.body.as[Seq[Long]]
+      val addSkillsResult  = userService.addSkills(id, skills)
+
+      if(addSkillsResult.isSuccess) Created(Json.toJson(addSkillsResult.result))
+      else BadRequest(addSkillsResult.message)
+    } else {
+      NotFound(userSkillsBodyValidation.isSuccess.toString)
+    }
   }
 }

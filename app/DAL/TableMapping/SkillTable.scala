@@ -9,10 +9,9 @@ class SkillTable(tag: Tag) extends Table[Skill](tag, "skill") {
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
   def name = column[String]("name")
   def description = column[String]("description")
-  def level = column[String]("level")
 
   override def * =
-    (id, name, description, level) <>(Skill.tupled, Skill.unapply)
+    (id, name, description) <>(Skill.tupled, Skill.unapply)
 
   def sk = projectSkill.filter(_.skillId === id).flatMap(_.projectFK)
 }

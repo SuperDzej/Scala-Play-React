@@ -1,9 +1,9 @@
 package DAL.TableMapping
 
 import slick.jdbc.PostgresProfile.api._
-import DAL.Models.UserInterest
+import DAL.Models.UserInterestingInfo
 
-class UserInterestTable (tag: Tag) extends Table[UserInterest](tag, "user_interest") {
+class UserInterestTable (tag: Tag) extends Table[UserInterestingInfo](tag, "user_interest") {
   val users = TableQuery[UserTable]
 
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -14,5 +14,5 @@ class UserInterestTable (tag: Tag) extends Table[UserInterest](tag, "user_intere
   def user = foreignKey("userId_fk", userId, users)(_.id)
 
   override def * =
-    (id, name, description, userId) <>(UserInterest.tupled, UserInterest.unapply)
+    (id, name, description, userId) <>(UserInterestingInfo.tupled, UserInterestingInfo.unapply)
 }

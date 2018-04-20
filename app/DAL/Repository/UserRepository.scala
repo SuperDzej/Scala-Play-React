@@ -2,17 +2,13 @@ package DAL.Repository
 
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
+
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import javax.inject._
-
-import DAL.Models.User
+import DAL.Models.{User, UserLeave, UserSkill}
 import DAL.Traits._
-import DAL.TableMapping.UserTable
 
 class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
-  val users = TableQuery[UserTable]
-
   def create(user: User): Future[Option[Long]] = {
     val userIdQuery = (users returning users.map(_.id)) += user
     runCommand(userIdQuery).map(userId => {
@@ -20,6 +16,32 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
     }).recover {
         case _: Exception => None
       }
+  }
+
+  def addSkills(user: User, skills: Seq[Long]): Future[Option[Long]] = {
+    val query = for {
+      projectSKillsM <- userSkills ++= skills.map(skill =>
+        UserSkill(skillId = skill, userId = user.id, level = "Pro", yearsExperience = 2))
+    } yield projectSKillsM
+
+    runCommand(query).map(userSkillId => {
+      Some(userSkillId.get.asInstanceOf[Long])
+    }).recover {
+      case e: Exception => println("Ex: " + e.getLocalizedMessage); None
+    }
+  }
+
+  def addLeaves(user: User, leaves: Seq[Long]): Future[Option[Long]] = {
+    val query = for {
+      projectSKillsM <- userLeaves ++= leaves.map(leave =>
+        UserLeave(leaveId = leave, userId = user.id))
+    } yield projectSKillsM
+
+    runCommand(query).map(userSkillId => {
+      Some(userSkillId.get.asInstanceOf[Long])
+    }).recover {
+      case e: Exception => println("Ex: " + e.getLocalizedMessage); None
+    }
   }
 
   def delete(id: Long): Future[Int] = {

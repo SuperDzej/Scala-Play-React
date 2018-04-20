@@ -11,14 +11,14 @@ import scala.concurrent.duration._
 class SkillService @Inject()(skillRepository: SkillRepository) {
   private val timeoutDuration = 2.seconds
 
-  def create(skillM: SkillModel): String = {
+  def create(skillM: SkillModel): Long = {
     val dbSkill = Converters.skillModelToSkill(skillM)
 
     val addSkillF = skillRepository.create(dbSkill)
     val addSkill = Await.result(addSkillF, timeoutDuration)
     addSkill match {
-      case Some(0) | None => "No skill created"
-      case Some(_) => "Skill created"
+      case Some(0) | None => 0L
+      case Some(skillId) => skillId
     }
   }
 
@@ -30,13 +30,13 @@ class SkillService @Inject()(skillRepository: SkillRepository) {
     val opSkill = Await.result(skillRepository.getById(id), timeoutDuration)
 
     opSkill match {
-      case Some(skill) => Some(Converters.skillToSkillModel(skill))
+      case Some(skill) => Some(Converters.skillToSkillModel(skill, None))
       case None => None
     }
   }
 
   def get: Seq[SkillModel] = {
-    val projects = Await.result(skillRepository.get, timeoutDuration)
-    projects.map(Converters.skillToSkillModel)
+    val skills = Await.result(skillRepository.get, timeoutDuration)
+    skills.map(Converters.skillToSkillModel(_, None))
   }
 }

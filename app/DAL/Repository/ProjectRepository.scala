@@ -6,14 +6,9 @@ import slick.jdbc.PostgresProfile.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject._
 import DAL.Models._
-import DAL.TableMapping._
 import DAL.Traits.IProjectRepository
 
 class ProjectRepository @Inject()() extends BaseRepository() with IProjectRepository {
-  val projects = TableQuery[ProjectTable]
-  val skills = TableQuery[SkillTable]
-  val projectSkills = TableQuery[ProjectSkillTable]
-
   def create(project: Project): Future[Option[Long]] = {
     val userIdQuery = (projects returning projects.map(_.id)) += project
     runCommand(userIdQuery).map(userId => {
