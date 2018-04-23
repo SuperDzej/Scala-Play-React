@@ -3,7 +3,7 @@
 # ~~~~
 
 # Serve index page from public directory
-GET     /                                           WebApi.Controllers.FrontendController.index()
+GET         /                                       WebApi.Controllers.FrontendController.index()
 
 # User related routes
 GET         /api/users/:offset/:limit               WebApi.Controllers.UserController.getWitLimitAndOffset(offset: Long, limit: Long)
@@ -14,11 +14,13 @@ GET         /api/users/:id                          WebApi.Controllers.UserContr
 
 DELETE      /api/users/:id                          WebApi.Controllers.UserController.delete(id: Long)
 
-PUT         /api/users/:userId/details              WebApi.Controllers.UserController.updateDetails(userId: Long)
+PUT         /api/users/:id/details                  WebApi.Controllers.UserController.updateDetails(id: Long)
 
 POST        /api/users/:id/leaves                   WebApi.Controllers.UserController.addLeaves(id: Long)
 
 POST        /api/users/:id/skills                   WebApi.Controllers.UserController.addSkills(id: Long)
+
+POST        /api/users/:id/projects                 WebApi.Controllers.UserController.addProjects(id: Long)
 
 # Account related routes
 POST        /token                                  WebApi.Controllers.AccountController.generateToken

@@ -7,10 +7,12 @@ import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.Future
 
+object BaseRepository {
+  val db = Database.forConfig("postgresDatabase")
+}
+
 class BaseRepository () {
   // We get config by name from application.config where db url is specified
-  val db = Database.forConfig("postgresDatabase")
-
   val users = TableQuery[UserTable]
   val userSkills = TableQuery[UserSkillTable]
   val userLeaves = TableQuery[UserLeaveTable]
@@ -21,9 +23,10 @@ class BaseRepository () {
   val usersDetails = TableQuery[UserDetailTable]
   val usersInterests = TableQuery[UserInterestTable]
   val leaveCategories = TableQuery[LeaveCategoryTable]
+  val userProjects = TableQuery[UserProjectTable]
   
   def getDatabaseConnection: JdbcProfile#Backend#Database = {
-    db
+    BaseRepository.db
   }
 
   def runCommand[R](command: DBIOAction[R, NoStream, Nothing]): Future[R] = {
@@ -31,6 +34,6 @@ class BaseRepository () {
     try{
       db.run(command)
     } finally db.close()*/
-    db.run(command)
+    BaseRepository.db.run(command)
   }
 }

@@ -26,8 +26,9 @@ class App extends Component {
 
   async componentDidMount() {
     Client.getSummary(summary => {
+      console.log(summary)
       this.setState({
-        title: summary.content
+        title: summary.data[0].email
       });
     });
   }
@@ -36,7 +37,7 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
-          <h1>Welcome to {this.state.title}!</h1>
+          <h1>Welcome {this.state.title}!</h1>
           <nav>
             <Link to="scala" >
               <img  width="450" height="300"  src={scalaLogo} alt="Scala Logo" />

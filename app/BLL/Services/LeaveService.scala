@@ -1,7 +1,7 @@
 package BLL.Services
 
 import BLL.Converters
-import BLL.Models.LeaveModel
+import BLL.Models.{LeaveModel, OperationResult}
 import DAL.Models.LeaveCategory
 import DAL.Traits.{ILeaveCategoryRepository, ILeaveRepository}
 import javax.inject.Inject
@@ -14,16 +14,19 @@ class LeaveService @Inject()(private val leaveRepository: ILeaveRepository,
                              private val leaveCategoryRepository: ILeaveCategoryRepository) {
   private val timeoutDuration = 3.seconds
 
-  def create(leaveM: LeaveModel): Long = {
+  def create(leaveM: LeaveModel): OperationResult[Long] = {
     val oCategoryId = Try(leaveM.category.toLong).toOption
-    oCategoryId.fold(0L)(categoryId => {
+    oCategoryId.fold(OperationResult(isSuccess = false,
+      message = "Invalid category id", result = 0L))(categoryId => {
       val dbVacation = Converters.leaveModelToLeave(leaveM, categoryId)
 
       val addVacationF = leaveRepository.create(dbVacation)
       val addVacation = Await.result(addVacationF, timeoutDuration)
       addVacation match {
-        case Some(0) | None => 0L
-        case Some(leaveId) => leaveId
+        case Some(0) | None => OperationResult(isSuccess = false,
+          message = "No leave created", result = 0L)
+        case Some(leaveId) => OperationResult(isSuccess = true,
+          message = "Leave created", result = leaveId)
       }
     })
   }

@@ -31,7 +31,9 @@ class SkillController @Inject()(cc: ControllerComponents,
     val skillModelValidation = request.body.validate[SkillModel]
     if(skillModelValidation.isSuccess) {
       val skillModel = request.body.as[SkillModel]
-      Created(Json.toJson(skillService.create(skillModel)))
+      val skillCreateResult = skillService.create(skillModel)
+      if(skillCreateResult.isSuccess) Created(Json.toJson(skillCreateResult.result))
+      else BadRequest(skillCreateResult.message)
     } else {
       BadRequest("Invalid data sent")
     }

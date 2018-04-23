@@ -50,19 +50,8 @@ class ProjectRepository @Inject()() extends BaseRepository() with IProjectReposi
     runCommand(projects.filter(_.id === id).delete)
   }
 
-  def getById(id: Long): Future[Option[(Project, Seq[Skill])]] = {
-    val join = projectSkills
-      .join(skills).on(_.skillId === _.id)
-      .join(projects).on(_._1.skillId === _.id)
-      .filter(_._2.id === id)
-      .result
-
-    runCommand(join)
-      .map(ps => {
-        ps.groupBy(_._2)
-          .map(ele => (ele._1, ele._2.map(_._1._2)))
-          .headOption
-      })
+  def getById(id: Long): Future[Option[Project]] = {
+    runCommand(projects.filter(_.id === id).result).map(_.headOption)
   }
 
   def getWithOffsetAndLimit(offset: Long, limit: Long): Future[Seq[Project]] = {
@@ -95,3 +84,16 @@ val sa = runCommand(crossJoin).map(projectWithSkills => {
     .map(ele => (ele._1, ele._2.map(_._2)))
     .headOption
 })*/
+
+/*val join = projectSkills
+  .join(skills).on(_.skillId === _.id)
+  .join(projects).on(_._1.skillId === _.id)
+  .filter(_._2.id === id)
+  .result
+
+runCommand(join)
+  .map(ps => {
+    ps.groupBy(_._2)
+      .map(ele => (ele._1, ele._2.map(_._1._2)))
+      .headOption
+  })*/

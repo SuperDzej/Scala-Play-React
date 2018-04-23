@@ -1,7 +1,7 @@
 package BLL.Services
 
 import BLL.Converters
-import BLL.Models.SkillModel
+import BLL.Models.{OperationResult, SkillModel}
 import DAL.Repository.SkillRepository
 import javax.inject.Inject
 
@@ -11,14 +11,16 @@ import scala.concurrent.duration._
 class SkillService @Inject()(skillRepository: SkillRepository) {
   private val timeoutDuration = 2.seconds
 
-  def create(skillM: SkillModel): Long = {
+  def create(skillM: SkillModel): OperationResult[Long] = {
     val dbSkill = Converters.skillModelToSkill(skillM)
 
     val addSkillF = skillRepository.create(dbSkill)
     val addSkill = Await.result(addSkillF, timeoutDuration)
     addSkill match {
-      case Some(0) | None => 0L
-      case Some(skillId) => skillId
+      case Some(0) | None => OperationResult(isSuccess = false,
+        message = "Skill not created", result = 0L)
+      case Some(skillId) => OperationResult(isSuccess = true,
+        message = "Skill successfully created", result = skillId)
     }
   }
 

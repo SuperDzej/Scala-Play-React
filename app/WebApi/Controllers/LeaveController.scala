@@ -15,35 +15,36 @@ class LeaveController @Inject()(cc: ControllerComponents,
   extends AbstractController(cc) {
 
   def get = Action {
-    val vacations:Seq[LeaveModel] = vacationService.get
-    Ok(new RestResponse(Json.toJson(vacations), None).toJson)
+    val leaves:Seq[LeaveModel] = vacationService.get
+    Ok(new RestResponse(Json.toJson(leaves), None).toJson)
   }
 
   def getById(id: Long) = Action {
-    val vacation: Option[LeaveModel] = vacationService.getById(id)
-    vacation match {
-      case vacationM: Some[LeaveModel] => Ok(Json.toJson(vacationM))
-      case None => NotFound("No vacation with id")
+    val leaveM: Option[LeaveModel] = vacationService.getById(id)
+    leaveM match {
+      case leave: Some[LeaveModel] => Ok(Json.toJson(leave))
+      case None => NotFound("No leave with id")
     }
   }
 
   def post: Action[JsValue] = Action(parse.json) { request =>
     val validateVacationBody = request.body.validate[LeaveModel]
     if(validateVacationBody.isSuccess) {
-      val vacationModel = request.body.as[LeaveModel]
-      Created(Json.toJson(vacationService.create(vacationModel)))
+      val leaveModel = request.body.as[LeaveModel]
+      val createLeaveResult = vacationService.create(leaveModel)
+
+      if(createLeaveResult.isSuccess) Created(Json.toJson(createLeaveResult.result))
+      else BadRequest(createLeaveResult.message)
     } else {
       BadRequest("Invalid data sent")
     }
   }
 
   def delete(id: Long) = Action {
-    val deletedVacationId: Int = vacationService.delete(id)
-    if(deletedVacationId == id) {
-      Ok("Vacation deleted")
-    } else {
-      NotFound("No vacation with id for deletion")
-    }
+    val deletedLeaveId: Int = vacationService.delete(id)
+
+    if(deletedLeaveId == id) Ok("Leave deleted")
+    else NotFound("No leave with id for deletion")
   }
 
 }

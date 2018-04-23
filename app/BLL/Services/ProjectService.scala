@@ -6,33 +6,39 @@ import javax.inject._
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import BLL.Models._
+import DAL.Models.ProjectSkill
 import DAL.Traits._
 
-class ProjectService @Inject()(private val projectRepository: IProjectRepository) {
+class ProjectService @Inject()(private val projectRepository: IProjectRepository,
+                               private val projectSkillRepository: IProjectSkillRepository) {
   private val timeoutDuration = 3.seconds
 
-  def create(projectM: ProjectModel): Long = {
+  def create(projectM: ProjectModel): OperationResult[Long] = {
       val dbProject = Converters.projectModelToProject(projectM)
 
       val addProjectF = projectRepository.create(dbProject)
       val addProject = Await.result(addProjectF, timeoutDuration)
       addProject match {
-        case Some(0L) | None => 0L
-        case Some(projectId) => projectId
+        case Some(0L) | None => OperationResult(isSuccess = false,
+          message = "Project not created", result = 0L)
+        case Some(projectId) => OperationResult(isSuccess = true,
+          message = "Project created", result = projectId)
       }
   }
 
-  def addSkills(projectId: Long, skills: Seq[Long]): String = {
+  def addSkills(projectId: Long, skills: Seq[Long]): OperationResult[Int] = {
     val oProject = Await.result(projectRepository.getById(projectId), timeoutDuration)
 
     oProject match {
-      case Some(project) =>
-        val addProjectSkill = Await.result(projectRepository.addSkills(project._1, skills), timeoutDuration)
-        addProjectSkill match {
-          case Some(0L) | None => "No project skills added"
-          case Some(_) => "Project skills added"
-        }
-      case None => "No project with specified id"
+      case Some(_) =>
+        val projectSkills = skills.map(skillId => ProjectSkill(skillId = skillId, projectId = projectId))
+        val addProjectSkill = Await.result(projectSkillRepository.createMultiple(projectSkills), timeoutDuration)
+        if(addProjectSkill <= 0) OperationResult(isSuccess = false,
+            message = "No project skills added", result = 0)
+        else OperationResult(isSuccess = true,
+          message = "Project skills added", result = addProjectSkill)
+      case None => OperationResult(isSuccess = false,
+        message = "No project with specified id", result = 0)
     }
   }
 
@@ -45,8 +51,9 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
 
     opUser match {
       case Some(project) =>
-        val skills = project._2.map(Converters.skillToSkillModel(_, None))
-        Some(Converters.projectToProjectModel(project._1, Some(skills)))
+        val dbSkills = Await.result(projectSkillRepository.getByProjectId(project.id), timeoutDuration)
+        // val skills = dbSkills.map(Converters.skillToSkillModel(_., None))
+        Some(Converters.projectToProjectModel(project, None))
       case None => None
     }
   }

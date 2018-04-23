@@ -6,7 +6,7 @@ import DAL.Models._
 object Converters {
   def userToUserModel(user: User, userDetailM: Option[UserDetailModel]): UserModel = {
     UserModel(Some(user.id), user.firstName, user.lastName,
-      user.email, user.username, None, userDetailM)
+      user.email, user.username, None, userDetailM, None, None, None)
   }
 
   def userModelToUser(userModel: UserModel, password: String): User = {

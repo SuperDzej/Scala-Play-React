@@ -31,7 +31,9 @@ class ProjectController @Inject()(cc: ControllerComponents,
     val projectModelValidation = request.body.validate[ProjectModel]
     if(projectModelValidation.isSuccess) {
       val projectModel = request.body.as[ProjectModel]
-      Created(Json.toJson(projectService.create(projectModel)))
+      val projectCreateResult = projectService.create(projectModel)
+      if(projectCreateResult.isSuccess) Created(Json.toJson(projectCreateResult.result))
+      else BadRequest(projectCreateResult.message)
     } else {
       BadRequest("Invalid data sent")
     }
@@ -39,8 +41,10 @@ class ProjectController @Inject()(cc: ControllerComponents,
 
   def addSkills(id: Long): Action[JsValue] = Action(parse.json) { request =>
     val skills = request.body.as[Seq[Long]]
+    val projectAddSkillsResult = projectService.addSkills(id, skills)
 
-    Ok(projectService.addSkills(id, skills))
+    if(projectAddSkillsResult.isSuccess) Ok(Json.toJson(projectAddSkillsResult.result))
+    else BadRequest(projectAddSkillsResult.message)
   }
 
   def delete(id: Long) = Action {

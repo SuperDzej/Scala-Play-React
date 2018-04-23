@@ -10,36 +10,39 @@ import WebApi.Models.RestResponse
 
 @Singleton
 class LeaveCategoryController @Inject()(cc: ControllerComponents,
-                                vacationService: LeaveCategoryService,
-                                vacationRepository: LeaveCategoryRepository)
+                                leaveCategoryService: LeaveCategoryService,
+                                leaveCategoryRepository: LeaveCategoryRepository)
   extends AbstractController(cc) {
 
   def get = Action {
-    val vacations:Seq[LeaveCategoryModel] = vacationService.get
+    val vacations:Seq[LeaveCategoryModel] = leaveCategoryService.get
     Ok(new RestResponse(Json.toJson(vacations), None).toJson)
   }
 
   def getById(id: Long) = Action {
-    val vacation: Option[LeaveCategoryModel] = vacationService.getById(id)
-    vacation match {
-      case vacationM: Some[LeaveCategoryModel] => Ok(Json.toJson(vacationM))
+    val leaveCategoryM: Option[LeaveCategoryModel] = leaveCategoryService.getById(id)
+    leaveCategoryM match {
+      case leave: Some[LeaveCategoryModel] => Ok(Json.toJson(leave))
       case None => NotFound("No vacation with id")
     }
   }
 
   def post: Action[JsValue] = Action(parse.json) { request =>
-    val validateVacationBody = request.body.validate[LeaveCategoryModel]
-    if(validateVacationBody.isSuccess) {
-      val vacationModel = request.body.as[LeaveCategoryModel]
-      Created(Json.toJson(vacationService.create(vacationModel)))
+    val validateLeaveBody = request.body.validate[LeaveCategoryModel]
+    if(validateLeaveBody.isSuccess) {
+      val leaveCategoryModel = request.body.as[LeaveCategoryModel]
+      val leaveCreateResult = leaveCategoryService.create(leaveCategoryModel)
+
+      if(leaveCreateResult.isSuccess) Created(Json.toJson(leaveCreateResult.result))
+      else BadRequest(leaveCreateResult.message)
     } else {
       BadRequest("Invalid data sent")
     }
   }
 
   def delete(id: Long) = Action {
-    val deletedVacationId: Int = vacationService.delete(id)
-    if(deletedVacationId == id) {
+    val deletedLeaveCategoryId: Int = leaveCategoryService.delete(id)
+    if(deletedLeaveCategoryId == id) {
       Ok("Leave category deleted")
     } else {
       NotFound("No leave category with id for deletion")
