@@ -9,12 +9,12 @@ import DAL.Models._
 import DAL.Traits._
 
 class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
-  def create(user: User): Future[Option[Long]] = {
+  def create(user: User): Future[Long] = {
     val userIdQuery = (users returning users.map(_.id)) += user
     runCommand(userIdQuery).map(userId => {
-      Some(userId)
+      userId
     }).recover {
-        case _: Exception => None
+        case _: Exception => 0L
       }
   }
 

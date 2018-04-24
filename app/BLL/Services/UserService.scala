@@ -25,18 +25,19 @@ class UserService @Inject()(private val userRepository: IUserRepository,
       val dbUser = Converters.userModelToUser(user, hashedPassword)
 
       val addUserResultId = Await.result(userRepository.create(dbUser), timeoutDuration)
-      if(addUserResultId.getOrElse(0L) > 0L) {
+      if(addUserResultId > 0L) {
         val dbUserDetail = UserDetail(0L, description = "", country = "", religion = "", height = 0.0,
-          weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResultId.get)
+          weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResultId)
         val addUserDetailF = userDetailRepository.create(dbUserDetail)
         val addUserDetailId = Await.result(addUserDetailF, timeoutDuration).getOrElse(0L)
         if (addUserDetailId > 0L) OperationResult[Long](isSuccess = true,
-          "User created", addUserDetailId)
+          "User created", addUserResultId)
         else OperationResult[Long](isSuccess = false,
           "User not created", 0L)
       }
-      else OperationResult[Long](isSuccess = false,
-        "User not created", 0L)
+      else {
+        OperationResult[Long](isSuccess = false, "User not created", 0L)
+      }
     })
   }
 
@@ -119,8 +120,21 @@ class UserService @Inject()(private val userRepository: IUserRepository,
           .getByUserId(dbUser.id), timeoutDuration)
         opUserDetail match {
           case Some(uDetail) =>
+            val skills = Await.result(userSkillRepository.getSkillsByUserId(dbUser.id), timeoutDuration)
+              .map(skillUserSkillTuple => Converters.skillToSkillModel(skillUserSkillTuple._1, Some(skillUserSkillTuple._2)))
+
+            val projects = Await.result(userProjectRepository.getProjectsByUserId(dbUser.id), timeoutDuration)
+              .map(projectWithSkills => {
+                val projectSkills = projectWithSkills._2.map(Converters.skillToSkillModel(_, None))
+                Converters.projectToProjectModel(projectWithSkills._1, Some(projectSkills))
+              })
+
+            val leaves = Await.result(userLeaveRepository.getLeavesByUserId(dbUser.id), timeoutDuration)
+              .map(leaveWithCategoryTuple => Converters.leaveToLeaveModel(leave = leaveWithCategoryTuple._1,
+                categoryName = leaveWithCategoryTuple._2.name))
+
             val userDetail = Some(Converters.userDetailToUserDetailModel(uDetail, None))
-            Some(Converters.userToUserModel(dbUser, userDetail))
+            Some(Converters.userToUserModel(dbUser, userDetail, Some(skills), Some(projects), Some(leaves)))
           case None => None
         }
       case None => None
@@ -136,7 +150,7 @@ class UserService @Inject()(private val userRepository: IUserRepository,
       .getWithOffsetAndLimit(offset, limit), timeoutDuration)
     dbUsers.map(userWithDetail => {
       val userDetailM = Some(Converters.userDetailToUserDetailModel(userWithDetail._2, None))
-      Converters.userToUserModel(userWithDetail._1, userDetailM)
+      Converters.userToUserModel(userWithDetail._1, userDetailM, None, None, None)
     })
   }
 }

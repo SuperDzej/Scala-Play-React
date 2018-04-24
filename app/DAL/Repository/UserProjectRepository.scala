@@ -35,6 +35,21 @@ class UserProjectRepository @Inject()() extends BaseRepository() with IUserProje
     runCommand(userProjects.filter(_.projectId === projectId).result)
   }
 
+  def getProjectsByUserId(userId: Long) : Future[Seq[(Project, Seq[Skill])]] = {
+    val join = userProjects
+      .join(users).on(_.userId === _.id)
+      .join(projects).on(_._1.projectId === _.id)
+      .filter(_._1._2.id === userId)
+      .joinLeft(projectSkills).on(_._1._1.projectId === _.projectId)
+      .joinLeft(skills).on(_._2.map(_.skillId) === _.id)
+      .result
+
+    runCommand(join)
+      .map(_.groupBy(_._1._1._2)
+          .map(ele => (ele._1, ele._2.flatten(_._2))) // Flatten will remove all None from Option and get will then only get skill values
+          .toSeq)
+  }
+
   def create(userProject: UserProject): Future[Int] = {
     val query = for {
       addCount <- userProjects += userProject

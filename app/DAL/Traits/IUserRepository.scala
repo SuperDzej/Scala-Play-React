@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 @ImplementedBy(classOf[UserRepository])
 trait IUserRepository {
-  def create(user: User): Future[Option[Long]]
+  def create(user: User): Future[Long]
 
   def delete(id: Long): Future[Int]
 

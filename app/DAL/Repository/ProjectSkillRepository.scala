@@ -35,6 +35,17 @@ class ProjectSkillRepository @Inject()() extends BaseRepository() with IProjectS
     runCommand(projectSkills.filter(_.projectId === projectId).result)
   }
 
+  def getSkillsByProjectId(projectId: Long) : Future[Seq[Skill]] = {
+    val join = projectSkills
+      .join(projects).on(_.projectId === _.id)
+      .join(skills).on(_._1.skillId === _.id)
+      .filter(_._1._2.id === projectId)
+      .result
+
+    runCommand(join)
+      .map(_.map(_._2))
+  }
+
   def create(userProject: ProjectSkill): Future[Int] = {
     val query = for {
       addCount <- projectSkills += userProject

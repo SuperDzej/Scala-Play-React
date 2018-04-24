@@ -35,6 +35,18 @@ class UserLeaveRepository @Inject()() extends BaseRepository() with IUserLeaveRe
     runCommand(userLeaves.filter(_.leaveId === leaveId).result)
   }
 
+  def getLeavesByUserId(userId: Long) : Future[Seq[(Leave, LeaveCategory)]] = {
+    val join = userLeaves
+      .join(users).on(_.userId === _.id)
+      .join(leaves).on(_._1.leaveId === _.id)
+      .join(leaveCategories).on(_._2.categoryId === _.id)
+      .filter(_._1._1._2.id === userId)
+      .result
+
+    runCommand(join)
+      .map(_.map(ulTuple => (ulTuple._1._2, ulTuple._2)))
+  }
+
   def create(userLeave: UserLeave): Future[Int] = {
     val query = for {
       addCount <- userLeaves += userLeave

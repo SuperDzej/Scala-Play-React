@@ -4,9 +4,11 @@ import BLL.Models._
 import DAL.Models._
 
 object Converters {
-  def userToUserModel(user: User, userDetailM: Option[UserDetailModel]): UserModel = {
+  def userToUserModel(user: User, userDetailM: Option[UserDetailModel],
+                      skills: Option[Seq[SkillModel]], projects: Option[Seq[ProjectModel]],
+                      leaves: Option[Seq[LeaveModel]]): UserModel = {
     UserModel(Some(user.id), user.firstName, user.lastName,
-      user.email, user.username, None, userDetailM, None, None, None)
+      user.email, user.username, None, userDetailM, skills = skills, projects = projects, leaves = leaves)
   }
 
   def userModelToUser(userModel: UserModel, password: String): User = {
@@ -38,9 +40,12 @@ object Converters {
       url = projectModel.url, startDate = projectModel.startDate, endDate = projectModel.endDate)
   }
 
-  def skillToSkillModel(skill: Skill, userSkill: Option[UserSkill]): SkillModel = {
-    SkillModel(Some(skill.id), skill.name, skill.description,
-      None, None)
+  def skillToSkillModel(skill: Skill, oUserSkill: Option[UserSkill]): SkillModel = {
+    oUserSkill match {
+      case Some(userSkill) => SkillModel(Some(skill.id), skill.name, skill.description,
+        level = Some(userSkill.level), yearsExperience = Some(userSkill.yearsExperience))
+      case None => SkillModel(Some(skill.id), skill.name, skill.description, None, None)
+    }
   }
 
   def skillModelToSkill(skillModel: SkillModel): Skill = {

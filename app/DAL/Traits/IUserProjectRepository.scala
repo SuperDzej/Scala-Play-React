@@ -1,6 +1,6 @@
 package DAL.Traits
 
-import DAL.Models.UserProject
+import DAL.Models.{Project, Skill, UserProject}
 
 import scala.concurrent.Future
 
@@ -11,6 +11,7 @@ trait IUserProjectRepository {
   def getByUserAndProjectId(userId: Long, projectId: Long): Future[Option[UserProject]]
   def getByUserId(userId: Long): Future[Seq[UserProject]]
   def getByProjectId(projectId: Long): Future[Seq[UserProject]]
+  def getProjectsByUserId(userId: Long) : Future[Seq[(Project, Seq[Skill])]]
   def create(userProject: UserProject): Future[Int]
   def createMultiple(skills: Seq[UserProject]): Future[Int]
 }

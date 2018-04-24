@@ -6,7 +6,7 @@ import javax.inject._
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import BLL.Models._
-import DAL.Models.ProjectSkill
+import DAL.Models.{Project, ProjectSkill, Skill}
 import DAL.Traits._
 
 class ProjectService @Inject()(private val projectRepository: IProjectRepository,
@@ -47,13 +47,14 @@ class ProjectService @Inject()(private val projectRepository: IProjectRepository
   }
 
   def getById(id: Long): Option[ProjectModel] = {
-    val opUser = Await.result(projectRepository.getById(id), timeoutDuration)
+    val oProject:Option[Project] = Await.result(projectRepository.getById(id), timeoutDuration)
 
-    opUser match {
+    oProject match {
       case Some(project) =>
-        val dbSkills = Await.result(projectSkillRepository.getByProjectId(project.id), timeoutDuration)
-        // val skills = dbSkills.map(Converters.skillToSkillModel(_., None))
-        Some(Converters.projectToProjectModel(project, None))
+        val dbSkills: Seq[Skill] = Await.result(projectSkillRepository.getSkillsByProjectId(project.id), timeoutDuration)
+
+        val skills = dbSkills.map(Converters.skillToSkillModel(_, None))
+        Some(Converters.projectToProjectModel(project, Some(skills)))
       case None => None
     }
   }

@@ -35,6 +35,17 @@ class UserSkillRepository @Inject()() extends BaseRepository() with IUserSkillRe
     runCommand(userSkills.filter(_.skillId === skillId).result)
   }
 
+  def getSkillsByUserId(userId: Long) : Future[Seq[(Skill, UserSkill)]] = {
+    val join = userSkills
+      .join(users).on(_.userId === _.id)
+      .join(skills).on(_._1.skillId === _.id)
+      .filter(_._1._2.id === userId)
+      .result
+
+    runCommand(join)
+      .map(_.map(ele => (ele._2, ele._1._1)))
+  }
+
   def create(userSkill: UserSkill): Future[Int] = {
     val query = for {
       addCount <- userSkills += userSkill
