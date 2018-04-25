@@ -52,5 +52,9 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
   def get: Future[Seq[User]] = {
     runCommand(users.result)
   }
+
+  def getTotal: Future[Int] = {
+    runCommand(users.length.result)
+  }
 }
 

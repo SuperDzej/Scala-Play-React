@@ -20,5 +20,7 @@ trait IUserRepository {
 
   def getWithOffsetAndLimit(offset: Long, limit: Long): Future[Seq[User]]
 
+  def getTotal: Future[Int]
+
   def get: Future[Seq[User]]
 }

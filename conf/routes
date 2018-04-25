@@ -10,6 +10,8 @@ GET         /api/users/:offset/:limit               WebApi.Controllers.UserContr
 
 POST        /api/users                              WebApi.Controllers.UserController.post
 
+GET         /api/users/total                        WebApi.Controllers.UserController.total
+
 GET         /api/users/:id                          WebApi.Controllers.UserController.getById(id: Long)
 
 DELETE      /api/users/:id                          WebApi.Controllers.UserController.delete(id: Long)

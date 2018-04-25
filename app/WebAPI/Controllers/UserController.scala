@@ -27,6 +27,10 @@ class UserController @Inject()(cc: ControllerComponents,
     }
   }
 
+  def total = Action {
+    Ok(userService.getTotal.toString)
+  }
+
   def post: Action[JsValue] = Action(parse.json) { request =>
     val userBodyValidation = request.body.validate[UserModel]
     if(userBodyValidation.isSuccess) {

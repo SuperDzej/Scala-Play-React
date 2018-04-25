@@ -153,6 +153,10 @@ class UserService @Inject()(private val userRepository: IUserRepository,
       Converters.userToUserModel(userWithDetail._1, userDetailM, None, None, None)
     })
   }
+
+  def getTotal: Int = {
+    Await.result(userRepository.getTotal, timeoutDuration)
+  }
 }
 
 
