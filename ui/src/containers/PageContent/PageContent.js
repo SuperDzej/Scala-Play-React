@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import { Layout } from 'antd';
 import UserList from '../UserList/UserList'
-
+import {
+  Route
+} from 'react-router-dom';
 
 const { Content } = Layout;
 const { Footer } = Layout;
@@ -17,7 +19,7 @@ class PageContent extends Component {
       <Layout style={{ padding: '0 24px 24px' }}>
         <div style={{ 'marginTop': '10px' }}></div>
         <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
-          <UserList />
+          <Route path="/users" exact component={UserList}/>
         </Content>
         <Footer style={{ textAlign: 'center' }}>
           Ant Colony ©2018 Created by Ant Dzej

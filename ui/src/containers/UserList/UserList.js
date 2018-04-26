@@ -1,13 +1,16 @@
 import React, {Component} from 'react'
 import UserService from "../../services/User";
+import {
+  Link
+} from "react-router-dom";
 
-import { Table, Divider , Icon } from 'antd';
+import { Table, Divider } from 'antd';
 
 const columns = [{
   title: 'Id',
   dataIndex: 'id',
   key: 'id', 
-  width: 50,
+  width: 100,
   fixed: 'left'
 },{
   title: 'First Name',
@@ -27,15 +30,23 @@ const columns = [{
 }, {
   title: 'Action',
   key: 'operation',
-  render: (record) => (
-    <span>
-      <a href="javascript:;">View</a>
-      <Divider type="vertical" />
-      <a href="javascript:;">Delete</a>
-      <Divider type="vertical" />
-      <a href="javascript:;">Edit</a>
-    </span>
-  )
+  render: (record) => {
+      var userId = record.id
+
+      return <span>
+        <Link to={ `/users/${userId}` }>
+          View
+        </Link>
+        <Divider type="vertical" />
+        <Link to={ `/users/${userId}/delete` }>
+          Delete
+        </Link>
+        <Divider type="vertical" />
+        <Link to={ `/users/${userId}/edit` }>
+          Edit
+        </Link>
+      </span>
+  }
 }];
 
 class UserList extends Component {
@@ -43,11 +54,25 @@ class UserList extends Component {
     super(props)
     this.state = { 
       data: [],
+      pageSize: 10,
       pagination: {
-        pageSize: 10
+        pageSizeOptions: [ '10', '20', '50'],
+        showSizeChanger: true,
+        onShowSizeChange: this.onShowSizeChange.bind(this),
       },
       loading: false,
-    };
+    }
+  }
+
+  onShowSizeChange(current, pageSize) {
+    console.log('Page size change' , current, pageSize);
+    console.log('State ', this.state)
+    const pager = { ...this.state.pagination };
+    pager.pageSize = pageSize
+    this.setState({
+      pagination: pager,
+      pageSize: pageSize
+    })
   }
 
   handleTableChange = (pagination, filters, sorter) => {
@@ -57,61 +82,43 @@ class UserList extends Component {
       pagination: pager,
     });
 
-    /*this.fetch({
-      results: pagination.pageSize,
-      page: pagination.current,
-      sortField: sorter.field,
-      sortOrder: sorter.order,
-      ...filters,
-    });*/
+    this.fetch();
   }
 
-  fetchTotal = (params = {}) => {
-    console.log('params:', params);
+  getOffset(page) {
+    var offset = page ? ((page - 1) * this.state.pageSize) : 0
+    return offset
+  }
+
+  fetch = (params = {}) => {
     this.setState({ loading: true });
-    console.log('T', this.state.pagination.total)
     UserService.getTotal((response) => {
       const pagination = { ...this.state.pagination };
-      console.log('Total', response)
       pagination.total = response;
-      this.setState({ pagination })
-    })
-    /*reqwest({
-      url: 'https://randomuser.me/api',
-      method: 'get',
-      data: {
-        results: 10,
-        ...params,
-      },
-      type: 'json',
-    }).then((data) => {
-      const pagination = { ...this.state.pagination };
-      // Read total count from server
-      // pagination.total = data.totalCount;
-      pagination.total = 200;
-      this.setState({
-        loading: false,
-        data: data.results,
-        pagination,
+      var offset = this.getOffset(this.state.pagination.current)
+      UserService.getWithOffsetAndLimit(offset, this.state.pageSize, users => {
+        this.setState({ 
+          loading: false,
+          data: users.data,
+          pagination
+        });
       });
-    });*/
-  }
-
-  onInputChange = (e) => {
-    this.setState({ searchText: e.target.value });
+    })
   }
 
   async componentDidMount() {
-    /*UserService.getWithOffsetAndLimit(0, 10, users => {
-      console.log(users)
-      this.setState({ data: users.data });
-    });*/
-    this.fetchTotal()
+    this.fetch()
   }
 
   render() {
     return (
-      <Table rowKey="id" dataSource={this.state.data} columns={columns} scroll={{ x: 1300 }} />
+      <Table rowKey="id" 
+        dataSource={this.state.data} 
+        columns={columns} 
+        pagination={this.state.pagination}
+        loading={this.state.loading}
+        onChange={this.handleTableChange.bind(this)}
+        scroll={{ x: 1300 }} />
     )
   }
 }
