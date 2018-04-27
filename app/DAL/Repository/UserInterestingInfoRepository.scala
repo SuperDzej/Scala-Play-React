@@ -8,9 +8,9 @@ import javax.inject._
 import DAL.Models.UserInterestingInfo
 import DAL.Traits._
 
-class UserInterestRepository @Inject()() extends BaseRepository() with IUserInterestRepository {
+class UserInterestingInfoRepository @Inject()() extends BaseRepository() with IUserInterestRepository {
   def create(userInterest: UserInterestingInfo): Future[Option[Long]] = {
-    val userInterestIdQuery = (usersInterests returning usersInterests.map(_.id)) += userInterest
+    val userInterestIdQuery = (usersInterestingInfo returning usersInterestingInfo.map(_.id)) += userInterest
     runCommand(userInterestIdQuery)
       .map(userId =>  Some(userId))
       .recover {
@@ -19,11 +19,11 @@ class UserInterestRepository @Inject()() extends BaseRepository() with IUserInte
   }
 
   def delete(id: Long): Future[Int] = {
-    runCommand(usersInterests.filter(_.id === id).delete)
+    runCommand(usersInterestingInfo.filter(_.id === id).delete)
   }
 
   def update(user: UserInterestingInfo) : Future[Option[UserInterestingInfo]] = {
-    val mapUpdateAction = usersInterests.filter(_.id === user.id)
+    val mapUpdateAction = usersInterestingInfo.filter(_.id === user.id)
       .map(dbUser => (dbUser.description, dbUser.name))
       .update( (user.description, user.name))
 
@@ -41,10 +41,10 @@ class UserInterestRepository @Inject()() extends BaseRepository() with IUserInte
   }
 
   def getById(id: Long): Future[Option[UserInterestingInfo]] = {
-    runCommand(usersInterests.filter(_.id === id).result).map(_.headOption)
+    runCommand(usersInterestingInfo.filter(_.id === id).result).map(_.headOption)
   }
 
   def get: Future[Seq[UserInterestingInfo]] = {
-    runCommand(usersInterests.result)
+    runCommand(usersInterestingInfo.result)
   }
 }

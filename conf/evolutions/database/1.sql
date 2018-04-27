@@ -40,6 +40,7 @@ CREATE TABLE "user_interesting_info" (
   "id" SERIAL PRIMARY KEY,
   "description" TEXT NOT NULL,
   "name" VARCHAR(100) NOT NULL,
+  "url" VARCHAR(200) NULL,
   "userId" SERIAL REFERENCES "user"(id)
 );
 

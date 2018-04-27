@@ -1,36 +1,25 @@
 import React, {Component} from 'react';
 
 import {
-  BrowserRouter as Router,
-  Route,
   Redirect
 } from 'react-router-dom';
+import UserAuth from '../../services/UserAuth'
+import LoginForm from '../../components/LoginForm'
 
-const fakeAuth = {
-  isAuthenticated: false,
-  authenticate(cb) {
-    this.isAuthenticated = true;
-    setTimeout(cb, 100); // fake async
-  },
-  signout(cb) {
-    this.isAuthenticated = false;
-    setTimeout(cb, 100);
-  }
-};
-
+import './Login.css'
 class Login extends Component {
   state = {
     redirectToReferrer: false
   };
 
   login = () => {
-    fakeAuth.authenticate(() => {
+    UserAuth.authenticate("email@gmail.com", "123az45AZ!", () => {
       this.setState({ redirectToReferrer: true });
     });
   };
 
   render() {
-    const { from } = this.props.location.state || { from: { pathname: "/" } };
+    const { from } = (this.props.location && this.props.location.state) || { from: { pathname: "/" } };
     const { redirectToReferrer } = this.state;
 
     if (redirectToReferrer) {
@@ -38,9 +27,8 @@ class Login extends Component {
     }
 
     return (
-      <div>
-        <p>You must log in to view the page at {from.pathname}</p>
-        <button onClick={this.login}>Log in</button>
+      <div className="container">
+        <LoginForm login={this.login.bind(this)} />
       </div>
     );
   }

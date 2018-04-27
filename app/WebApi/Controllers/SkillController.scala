@@ -42,9 +42,9 @@ class SkillController @Inject()(cc: ControllerComponents,
   def delete(id: Long) = Action {
     val deletedUserId: Int = skillService.delete(id)
     if(deletedUserId == id) {
-      Ok("User deleted")
+      Ok("Skill deleted")
     } else {
-      NotFound("No user with id for deletion")
+      NotFound("No skill with id for deletion")
     }
   }
 }

@@ -21,7 +21,7 @@ class BaseRepository () {
   val skills = TableQuery[SkillTable]
   val projectSkills = TableQuery[ProjectSkillTable]
   val usersDetails = TableQuery[UserDetailTable]
-  val usersInterests = TableQuery[UserInterestTable]
+  val usersInterestingInfo = TableQuery[UserInterestingInfoTable]
   val leaveCategories = TableQuery[LeaveCategoryTable]
   val userProjects = TableQuery[UserProjectTable]
   

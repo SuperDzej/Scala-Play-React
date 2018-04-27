@@ -6,6 +6,8 @@ import {
   Redirect,
   withRouter
 } from "react-router-dom";
+import UserAuth from '../services/UserAuth'
+import PrivateRoute from '../components/PrivateRoute'
 
 const AuthExample = () => (
   <Router>
@@ -26,26 +28,14 @@ const AuthExample = () => (
   </Router>
 );
 
-const fakeAuth = {
-  isAuthenticated: false,
-  authenticate(cb) {
-    this.isAuthenticated = true;
-    setTimeout(cb, 100); // fake async
-  },
-  signout(cb) {
-    this.isAuthenticated = false;
-    setTimeout(cb, 100);
-  }
-};
-
 const AuthButton = withRouter(
   ({ history }) =>
-    fakeAuth.isAuthenticated ? (
+    UserAuth.isAuthenticated() ? (
       <p>
         Welcome!{" "}
         <button
           onClick={() => {
-            fakeAuth.signout(() => history.push("/"));
+            UserAuth.signout(() => history.push("/"));
           }}
         >
           Sign out
@@ -54,24 +44,6 @@ const AuthButton = withRouter(
     ) : (
       <p>You are not logged in.</p>
     )
-);
-
-const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      fakeAuth.isAuthenticated ? (
-        <Component {...props} />
-      ) : (
-        <Redirect
-          to={{
-            pathname: "/login",
-            state: { from: props.location }
-          }}
-        />
-      )
-    }
-  />
 );
 
 const Public = () => <h3>Public</h3>;
@@ -83,7 +55,7 @@ class Login extends React.Component {
   };
 
   login = () => {
-    fakeAuth.authenticate(() => {
+    UserAuth.authenticate("email@gmail.com", "123az45AZ!", () => {
       this.setState({ redirectToReferrer: true });
     });
   };

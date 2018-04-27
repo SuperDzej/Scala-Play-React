@@ -69,4 +69,13 @@ object Converters {
   def leaveCategoryModelToLeaveCategory(leaveModel: LeaveCategoryModel): LeaveCategory = {
     LeaveCategory(leaveModel.id.getOrElse(0L), name = leaveModel.name)
   }
+
+  def interestingInfoToInterestingInfoModel(interestingInfo: UserInterestingInfo): InterestingInfoModel = {
+    InterestingInfoModel(Some(interestingInfo.id), interestingInfo.name, interestingInfo.description, interestingInfo.url)
+  }
+
+  def interestingInfoModelToInterestingInfo(interestingInfoModel: InterestingInfoModel, userId: Long) : UserInterestingInfo = {
+    UserInterestingInfo(interestingInfoModel.id.getOrElse(0L), interestingInfoModel.name,
+      interestingInfoModel.description, interestingInfoModel.url, userId)
+  }
 }

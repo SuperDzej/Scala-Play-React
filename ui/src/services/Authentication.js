@@ -6,9 +6,11 @@ function getToken(email, password, cb) {
     password: password
   }
   
-  Client.post(`/token`, data, cb);
+  Client.post('/token', data, cb);
 }
 
+const Authentication = { 
+  getToken
+};
 
-const User = { getToken };
-export default User;
+export default Authentication;

@@ -4,7 +4,7 @@ function coreRequest(route, headers, method, payload, cb) {
   var data = payload ? JSON.stringify(payload) : null;
   return fetch(route, {
       headers: new Headers({
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVtYWlsQGdtYWlsLmNvbSIsInVzZXJJZCI6OCwicm9sZSI6IkN1c3RvbWVyIn0.ChLWez-4-APQA9fhdV4kz3wNGXNhSxlxoiHE4AJPk-E', 
+        // 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVtYWlsQGdtYWlsLmNvbSIsInVzZXJJZCI6OCwicm9sZSI6IkN1c3RvbWVyIn0.ChLWez-4-APQA9fhdV4kz3wNGXNhSxlxoiHE4AJPk-E', 
         ...headers
       }),
       method: method,
