@@ -7,10 +7,11 @@ import {
 
 import { Layout } from 'antd';
 
-import Home from '../Home/Home'
 import ProtectedContent from '../ProtectedContent/ProtectedContent'
 import Login from '../Login/Login'
+import Signup from '../Signup/Signup'
 import ProtectedRoute from '../../components/ProtectedRoute'
+import PageHeader from '../PageHeader/Header'
 
 import './App.css';
 import 'antd/dist/antd.css';
@@ -20,9 +21,10 @@ class App extends Component {
     return (
       <Router>
         <Layout  style={{ minHeight: '100vh' }}>
+          <PageHeader />
           <Switch>
             <Route path="/login" component={Login} />
-            <Route path="/signup" component={Login} />
+            <Route path="/signup" component={Signup} />
             <ProtectedRoute path="/" component={ProtectedContent} />
           </Switch>
         </Layout>

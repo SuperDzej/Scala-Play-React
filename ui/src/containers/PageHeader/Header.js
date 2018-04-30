@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
-import { Layout, Menu } from 'antd';
-import {
-  Link
-} from "react-router-dom";
-import AuthButton from '../AuthButton/AuthButton'
+import { Layout } from 'antd';
 
+import AuthButton from '../AuthButton/AuthButton'
 
 import './Header.css'
 
@@ -15,7 +12,7 @@ class PageHeader extends Component {
     return (
       <Header className="header">
         <div className="logo" />
-        
+        <AuthButton />
       </Header>
     )
   }

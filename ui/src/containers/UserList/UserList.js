@@ -92,18 +92,23 @@ class UserList extends Component {
 
   fetch = (params = {}) => {
     this.setState({ loading: true });
-    UserService.getTotal((response) => {
-      const pagination = { ...this.state.pagination };
-      pagination.total = response;
-      var offset = this.getOffset(this.state.pagination.current)
-      UserService.getWithOffsetAndLimit(offset, this.state.pageSize, users => {
-        this.setState({ 
-          loading: false,
-          data: users.data,
-          pagination
-        });
-      });
-    })
+    UserService.getTotal()
+      .then((response) => {
+        const pagination = { ...this.state.pagination };
+        pagination.total = response;
+        var offset = this.getOffset(this.state.pagination.current)
+        return UserService.getWithOffsetAndLimit(offset, this.state.pageSize)
+          .then((users) => {
+            this.setState({ 
+              loading: false,
+              data: users.data,
+              pagination
+            });
+          })
+      })
+      .catch((e) => {
+        console.log(e)
+      })
   }
 
   async componentDidMount() {

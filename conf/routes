@@ -12,6 +12,8 @@ POST        /api/users                                  WebApi.Controllers.UserC
 
 GET         /api/users/total                            WebApi.Controllers.UserController.total
 
+GET         /api/users/me                               WebApi.Controllers.UserController.me
+
 GET         /api/users/:id                              WebApi.Controllers.UserController.getById(id: Long)
 
 DELETE      /api/users/:id                              WebApi.Controllers.UserController.delete(id: Long)

@@ -9,14 +9,33 @@ import LoginForm from '../../components/LoginForm'
 import './Login.css'
 class Login extends Component {
   state = {
-    redirectToReferrer: false
+    redirectToReferrer: false,
+    error: null
   };
 
-  login = () => {
-    UserAuth.authenticate("email@gmail.com", "123az45AZ!", () => {
-      this.setState({ redirectToReferrer: true });
+  login = (email, password) => {
+    UserAuth.authenticate(email, password, (err, response) => {
+      if (err) {
+        this.setState({ error: err })
+      } else {
+        this.setState({ redirectToReferrer: true });
+      }
     });
   };
+
+  handleSubmit = (e, form) => {
+    e.preventDefault();
+    form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+        this.login(values.userName, values.password)
+      }
+    });
+  }
+
+  onErrorClose = () => {
+
+  }
 
   render() {
     const { from } = (this.props.location && this.props.location.state) || { from: { pathname: "/" } };
@@ -28,7 +47,8 @@ class Login extends Component {
 
     return (
       <div className="container">
-        <LoginForm login={this.login.bind(this)} />
+        <LoginForm error={this.state.error} 
+          handleSubmit={this.handleSubmit.bind(this) } onErrorClose={this.onErrorClose.bind(this)} />
       </div>
     );
   }

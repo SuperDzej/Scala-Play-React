@@ -2,6 +2,7 @@ import Authentication from './Authentication'
 
 const UserAuth = {
   storageKey: 'token',
+  authentication: Authentication,
   isAuthenticated() {
     var authorization = this.getAuthorization()
     return authorization !== null
@@ -11,10 +12,14 @@ const UserAuth = {
     return authObj ? `${authObj.schema} ${authObj.token}` : null 
   },
   authenticate(username, password, cb) {
-    Authentication.getToken(username, password, (response) => {
-      localStorage.setItem(this.storageKey, response)
-      cb()
-    })
+    this.authentication.getToken(username, password)
+      .then((response) => {
+        localStorage.setItem(this.storageKey, response)
+        cb(null, response)
+      })
+      .catch((e) => {
+        cb(e, null)
+      })
   },
   signout(cb) {
     localStorage.removeItem(this.storageKey)

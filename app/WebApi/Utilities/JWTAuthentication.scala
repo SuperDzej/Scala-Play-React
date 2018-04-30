@@ -1,5 +1,6 @@
 package WebApi.Utilities
 
+import BLL.Converters
 import javax.inject.Inject
 import play.api.libs.json._
 import play.api.mvc._
@@ -8,19 +9,23 @@ import play.api.mvc.Results._
 import scala.concurrent.{ExecutionContext, Future}
 import DAL.Models._
 import DAL.Repository.UserRepository
-import WebApi.Models.UserJwtPayload
+import WebApi.Models.{UserJwtPayload, UserRequest}
+import play.api.http.HttpVerbs
 
 import scala.concurrent._
 import scala.concurrent.duration._
 
-case class UserRequest[A](userInfo: User, request: Request[A]) extends WrappedRequest(request)
+class JWTAuthentication @Inject()(playBodyParsers: PlayBodyParsers,
+                                  userRepository: UserRepository,
+                                  jwtUtility: JwtUtility)
+                                 (implicit val executionContext: ExecutionContext)
+  extends ActionBuilder[UserRequest, AnyContent]
+    with HttpVerbs {
 
-class JWTAuthentication @Inject() (parser: BodyParsers.Default, userRepository: UserRepository,
-                                   jwtUtility: JwtUtility)(implicit ec: ExecutionContext)
-  extends ActionBuilderImpl(parser) {
-  private implicit val objectReads:Reads[UserJwtPayload] = Json.reads[UserJwtPayload]
+  val parser: BodyParser[AnyContent] = playBodyParsers.anyContent
 
-  override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]):Future[Result] = {
+  override def invokeBlock[A](request: Request[A],
+                              block: UserRequest[A] => Future[Result]): Future[Result] = {
     val jwtTokenAuth = request.headers.get("Authorization").getOrElse("")
     val jwtToken = jwtTokenAuth.replaceAll("(Bearer|bearer)" + " ", "")
 
@@ -34,19 +39,20 @@ class JWTAuthentication @Inject() (parser: BodyParsers.Default, userRepository: 
           case jsUserCredentials: JsSuccess[UserJwtPayload] =>
             val userCredentials: UserJwtPayload = jsUserCredentials.get
 
-            val userInfoF: Future[Option[User]] = userRepository.getByEmail(userCredentials.email)
-            val userInfo: Option[User] = Await.result(userInfoF, 3.seconds)
-
+            val userInfo: Option[User] = Await.result(userRepository.getByEmail(userCredentials.email), 3.seconds)
+            println(userInfo)
             userInfo match {
               case Some(user) =>
-                if (user.id == userCredentials.userId)
-                  block(UserRequest(user, request))
+                if (user.id == userCredentials.userId) {
+                  val userModel = Converters.userToUserModel(user, None, None, None, None)
+                  block(UserRequest(userModel, request))
+                }
                 else
                   Future.successful(Unauthorized("Invalid credential, invalid id"))
               case None =>
                 Future.successful(Unauthorized("Invalid credential"))
             }
-          case e: JsError => Future.successful(Unauthorized("Invalid token payload"))
+          case _: JsError => Future.successful(Unauthorized("Invalid token payload"))
         }
       }
     } else {
@@ -54,4 +60,3 @@ class JWTAuthentication @Inject() (parser: BodyParsers.Default, userRepository: 
     }
   }
 }
-

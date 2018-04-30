@@ -1,7 +1,7 @@
 package WebApi.Controllers
 
 import BLL.Services.AuthenticationService
-import WebApi.Models.{JwtToken, UserCredentials}
+import WebApi.Models._
 import javax.inject._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
@@ -14,7 +14,9 @@ class AccountController @Inject()(cc: ControllerComponents,
                                   authService: AuthenticationService)
   extends AbstractController(cc) {
 
-  def index = jwtAuthentication { _ =>
+  def index = jwtAuthentication { implicit request =>
+    println("User auth info")
+    println(request.userInfo)
     Ok("User authenticated")
   }
 
@@ -26,4 +28,6 @@ class AccountController @Inject()(cc: ControllerComponents,
       case None => NotFound
     }
   }
+
+
 }

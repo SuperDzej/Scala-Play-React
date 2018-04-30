@@ -1,15 +1,15 @@
 import Client from "./Client";
 
-function getWithOffsetAndLimit(offset, limit, cb) {
-  Client.get(`/api/users/${offset}/${limit}`, cb);
+function getWithOffsetAndLimit(offset, limit, ) {
+  return Client.get(`/api/users/${offset}/${limit}`);
 }
 
-function getTotal(cb) {
-  Client.get('/api/users/total', cb)
+function getTotal() {
+  return Client.get('/api/users/total')
 }
 
-function post(data, cb) {
-  Client.post('/api/users', data, cb)
+function post(data) {
+  return Client.post('/api/users', data)
 }
 
 const User = { getWithOffsetAndLimit, getTotal, post };

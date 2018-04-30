@@ -1,12 +1,12 @@
 import Client from "./Client";
 
-function getToken(email, password, cb) {
+function getToken(email, password) {
   var data = {
     email: email,
     password: password
   }
   
-  Client.post('/token', data, cb);
+  return Client.post('/token', data);
 }
 
 const Authentication = { 

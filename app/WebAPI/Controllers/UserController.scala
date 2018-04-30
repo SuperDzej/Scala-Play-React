@@ -7,9 +7,11 @@ import BLL.Models._
 import BLL.Services._
 import DAL.Repository.UserDetailRepository
 import WebApi.Models.RestResponse
+import WebApi.Utilities.JWTAuthentication
 
 @Singleton
 class UserController @Inject()(cc: ControllerComponents,
+                               jwtAuthentication: JWTAuthentication,
                                userService: UserService,
                                userDetailRepository: UserDetailRepository)
   extends AbstractController(cc) {
@@ -29,6 +31,10 @@ class UserController @Inject()(cc: ControllerComponents,
 
   def total = Action {
     Ok(userService.getTotal.toString)
+  }
+
+  def me = jwtAuthentication { request =>
+    Ok(Json.toJson(request.userInfo))
   }
 
   def post: Action[JsValue] = Action(parse.json) { request =>

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-function coreRequest(route, headers, method, payload, cb) {
+function coreRequest(route, headers, method, payload) {
   var data = payload ? JSON.stringify(payload) : null;
   return fetch(route, {
       headers: new Headers({
@@ -12,7 +12,6 @@ function coreRequest(route, headers, method, payload, cb) {
     })
     .then(checkStatus)
     .then(parseJSON)
-    .then(cb);
 }
 
 function getCoreHeaders() {
@@ -22,20 +21,20 @@ function getCoreHeaders() {
   };
 }
 
-function get(route, cb) {
-  coreRequest(route, getCoreHeaders(), "GET", null, cb);
+function get(route) {
+  return coreRequest(route, getCoreHeaders(), "GET", null);
 }
 
-function post(route, payload, cb) {
-  coreRequest(route, getCoreHeaders(), "POST", payload, cb);
+function post(route, payload) {
+  return coreRequest(route, getCoreHeaders(), "POST", payload);
 }
 
-function put(route, payload, cb) {
-  coreRequest(route, getCoreHeaders(), "PUT", payload, cb);
+function put(route, payload) {
+  return coreRequest(route, getCoreHeaders(), "PUT", payload);
 }
 
-function deleteResource(route, cb) {
-  coreRequest(route, getCoreHeaders(), "DELETE", null, cb);
+function deleteResource(route) {
+  return coreRequest(route, getCoreHeaders(), "DELETE", null);
 }
 
 function checkStatus(response) {
