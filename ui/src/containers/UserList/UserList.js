@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
-import UserService from "../../services/User";
+import UserService from '../../services/User'
 import {
   Link
-} from "react-router-dom";
+} from 'react-router-dom';
 
 import { Table, Divider } from 'antd';
 
@@ -10,7 +10,7 @@ const columns = [{
   title: 'Id',
   dataIndex: 'id',
   key: 'id', 
-  width: 100,
+  width: 80,
   fixed: 'left'
 },{
   title: 'First Name',
@@ -29,21 +29,22 @@ const columns = [{
   key: 'username'
 }, {
   title: 'Action',
+  width: 165,
   key: 'operation',
   render: (record) => {
       var userId = record.id
 
       return <span>
-        <Link to={ `/users/${userId}` }>
+        <Link to={ `/users/${userId}/view` }>
           View
         </Link>
-        <Divider type="vertical" />
-        <Link to={ `/users/${userId}/delete` }>
-          Delete
-        </Link>
-        <Divider type="vertical" />
+        <Divider type='vertical' />
         <Link to={ `/users/${userId}/edit` }>
           Edit
+        </Link>
+        <Divider type='vertical' />
+        <Link to={ `/users/${userId}/delete` }>
+          Delete
         </Link>
       </span>
   }
@@ -65,8 +66,6 @@ class UserList extends Component {
   }
 
   onShowSizeChange(current, pageSize) {
-    console.log('Page size change' , current, pageSize);
-    console.log('State ', this.state)
     const pager = { ...this.state.pagination };
     pager.pageSize = pageSize
     this.setState({
@@ -117,7 +116,7 @@ class UserList extends Component {
 
   render() {
     return (
-      <Table rowKey="id" 
+      <Table rowKey='id' 
         dataSource={this.state.data} 
         columns={columns} 
         pagination={this.state.pagination}

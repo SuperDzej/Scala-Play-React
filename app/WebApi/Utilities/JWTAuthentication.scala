@@ -22,10 +22,11 @@ class JWTAuthentication @Inject()(playBodyParsers: PlayBodyParsers,
   extends ActionBuilder[UserRequest, AnyContent]
     with HttpVerbs {
 
-  val parser: BodyParser[AnyContent] = playBodyParsers.anyContent
+  val parser: BodyParser[AnyContent] = playBodyParsers.default
 
   override def invokeBlock[A](request: Request[A],
                               block: UserRequest[A] => Future[Result]): Future[Result] = {
+
     val jwtTokenAuth = request.headers.get("Authorization").getOrElse("")
     val jwtToken = jwtTokenAuth.replaceAll("(Bearer|bearer)" + " ", "")
 

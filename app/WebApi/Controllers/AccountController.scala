@@ -21,11 +21,16 @@ class AccountController @Inject()(cc: ControllerComponents,
   }
 
   def generateToken: Action[JsValue] = Action(parse.json) { request =>
-    val userCredentials = request.body.as[UserCredentials]
-    val tokenPayload: Option[String] = authService.generateTokenPayload(userCredentials)
-    tokenPayload match {
-      case Some(payload) => Ok(Json.toJson(jwtUtility.createToken(payload)))
-      case None => NotFound
+    val userBodyValidation = request.body.validate[UserCredentials]
+    if(userBodyValidation.isSuccess) {
+      val userCredentials = request.body.as[UserCredentials]
+      val tokenPayload: Option[String] = authService.generateTokenPayload(userCredentials)
+      tokenPayload match {
+        case Some(payload) => Ok(Json.toJson(jwtUtility.createToken(payload)))
+        case None => NotFound
+      }
+    } else {
+      BadRequest("Invalid credentials")
     }
   }
 

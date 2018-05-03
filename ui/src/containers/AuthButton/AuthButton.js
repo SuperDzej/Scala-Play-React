@@ -5,9 +5,13 @@ import {
 } from "react-router-dom";
 import { Menu } from 'antd';
 import UserAuth from '../../services/UserAuth'
+import LocalStorage from '../../utils/LocalStorageUtil'
 
 const AuthButton = withRouter(
   ({ history }) => {
+    var userInfo = LocalStorage.getItem(UserAuth.userInfoKey)
+    var username = userInfo.username ? userInfo.username : 'No username'
+
     return UserAuth.isAuthenticated() ? (
       <Menu
       theme="dark"
@@ -18,7 +22,7 @@ const AuthButton = withRouter(
         justifyContent: 'flex-end' 
       }}
     >
-        <Menu.Item key="1">Welcome! {" very very very long name and surename "}</Menu.Item>
+        <Menu.Item key="1"><Link to="/profile">Welcome {username}</Link></Menu.Item>
         <Menu.Item key="2" style={{ textAlign: 'right' }}>
           <a onClick={() => {
             UserAuth.signout(() => history.push("/"));

@@ -1,10 +1,17 @@
 /* eslint-disable no-undef */
 
+import UserAuth from './UserAuth'
+import LocalStorage from '../utils/LocalStorageUtil'
+
+const routesWithoutAuthorization = ['/token']
+
 function coreRequest(route, headers, method, payload) {
   var data = payload ? JSON.stringify(payload) : null;
+
+  addAuthorizationHeaderIfExist(route, headers)
+
   return fetch(route, {
       headers: new Headers({
-        // 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVtYWlsQGdtYWlsLmNvbSIsInVzZXJJZCI6OCwicm9sZSI6IkN1c3RvbWVyIn0.ChLWez-4-APQA9fhdV4kz3wNGXNhSxlxoiHE4AJPk-E', 
         ...headers
       }),
       method: method,
@@ -14,27 +21,36 @@ function coreRequest(route, headers, method, payload) {
     .then(parseJSON)
 }
 
+function addAuthorizationHeaderIfExist(route, headers) {
+  var token = LocalStorage.getItem(UserAuth.storageKey)
+  var isRouteWithAutorization = routesWithoutAuthorization.indexOf(route) === -1
+
+  if(token && isRouteWithAutorization) {
+    headers['Authorization'] = `${token.schema} ${token.token}`
+  }
+}
+
 function getCoreHeaders() {
  return {
-    accept: "application/json",
-    "content-type": "application/json"
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
   };
 }
 
 function get(route) {
-  return coreRequest(route, getCoreHeaders(), "GET", null);
+  return coreRequest(route, getCoreHeaders(), 'GET', null);
 }
 
 function post(route, payload) {
-  return coreRequest(route, getCoreHeaders(), "POST", payload);
+  return coreRequest(route, getCoreHeaders(), 'POST', payload);
 }
 
 function put(route, payload) {
-  return coreRequest(route, getCoreHeaders(), "PUT", payload);
+  return coreRequest(route, getCoreHeaders(), 'PUT', payload);
 }
 
 function deleteResource(route) {
-  return coreRequest(route, getCoreHeaders(), "DELETE", null);
+  return coreRequest(route, getCoreHeaders(), 'DELETE', null);
 }
 
 function checkStatus(response) {

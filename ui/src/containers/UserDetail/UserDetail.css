@@ -1,0 +1,11 @@
+.fieldDescription {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.objectDescription {
+  font-weight: 600;
+  font-size: 18px;
+  width: 10%;
+  float: left;
+}
