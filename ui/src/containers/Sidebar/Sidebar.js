@@ -11,12 +11,38 @@ import 'antd/dist/antd.css';
 const { Sider } = Layout;
 
 class Sidebar extends Component {
+  urlToSelectedMenuMapping = {
+    '/users': '15',
+    '/leaves': '16',
+    '/projects': '17'
+  }
+
   state = {
-    collapsed: false,
+    collapsed: false
   };
+
+  getSelectedMenyKeys() {
+    return Object.keys(this.urlToSelectedMenuMapping)
+      .filter((prop) => {
+        if(~window.location.pathname.indexOf(prop)) {
+          return this.urlToSelectedMenuMapping[prop];
+        } 
+
+        return null;
+    }).map(key => this.urlToSelectedMenuMapping[key])
+  }
+
+  componentDidMount() {
+    var selectedMenuKeys = this.getSelectedMenyKeys()
+    this.setState({ selectedMenuKeys : selectedMenuKeys.length > 0 ? selectedMenuKeys : [this.urlToSelectedMenuMapping['/users']] })
+  }
 
   onCollapse = (collapsed) => {
     this.setState({ collapsed });
+  }
+
+  menuClick = (item) => {
+    this.setState({ selectedMenuKeys: item.keyPath })
   }
 
   render() {
@@ -28,7 +54,8 @@ class Sidebar extends Component {
           collapsed={this.state.collapsed}
           onCollapse={this.onCollapse}
         >
-          <Menu theme="dark" defaultSelectedKeys={['15']} mode="inline">
+          <Menu theme="dark" onClick={this.menuClick} selectedKeys={ this.state.selectedMenuKeys } 
+            mode="inline">
             <Menu.Item key="15">
                 <Link to="/users">            
                   <Icon type="user" /> 

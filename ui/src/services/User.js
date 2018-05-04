@@ -1,6 +1,6 @@
 import Client from "./Client";
 
-function getWithOffsetAndLimit(offset, limit, ) {
+function getWithOffsetAndLimit(offset, limit) {
   return Client.get(`/api/users/${offset}/${limit}`);
 }
 
@@ -25,4 +25,4 @@ function deleteResource(id) {
 }
 
 const User = { getWithOffsetAndLimit, getById, getTotal, getInfo, post , deleteResource};
-export default User;
+export default User

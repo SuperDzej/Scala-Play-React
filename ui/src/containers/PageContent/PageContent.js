@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 import ProtectedHome from '../ProtectedHome/ProtectedHome';
 import UserDetail from '../UserDetail/UserDetail';
+import LeaveCalendar from '../LeaveCalendar/LeaveCalendar'
 
 const { Content } = Layout;
 const { Footer } = Layout;
@@ -25,6 +26,7 @@ class PageContent extends Component {
           <Route path='/' exact component={ProtectedHome} />
           <Route path='/users' exact component={UserList} />
           <Route path='/users/:id/:type' component={UserDetail} />
+          <Route path="/leaves" exact component={LeaveCalendar} />
           <Route path='/profile' component={UserDetail} />
         </Content>
         <Footer style={{ textAlign: 'center' }}>

@@ -1,0 +1,14 @@
+.leaveInfo {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.totalLeave {
+  width: 60%;
+}
+
+.requestLeaveBtn {
+  margin-left: 10px;
+  float: left;
+}

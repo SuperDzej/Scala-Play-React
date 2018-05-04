@@ -10,7 +10,7 @@ import LocalStorage from '../../utils/LocalStorageUtil'
 const AuthButton = withRouter(
   ({ history }) => {
     var userInfo = LocalStorage.getItem(UserAuth.userInfoKey)
-    var username = userInfo.username ? userInfo.username : 'No username'
+    var username = userInfo ? userInfo.username : 'No username'
 
     return UserAuth.isAuthenticated() ? (
       <Menu

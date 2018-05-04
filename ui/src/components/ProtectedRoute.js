@@ -23,7 +23,6 @@ const ProtectedRoute = ({ component: Component, ...rest }) => (
           )
         }
 
-        console.log('Location', props.location)
         var isHomePage = props.location.pathname === '/'
         var isLoginPage = props.location.pathname === '/login'
         var isSignupPage = props.location.pathname === '/signup'
