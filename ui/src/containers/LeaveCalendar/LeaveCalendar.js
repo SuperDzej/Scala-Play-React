@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import { Link } from 'react-router-dom'
 import { Calendar, Alert, Button } from 'antd';
 import moment from 'moment';
 
@@ -47,7 +48,7 @@ class LeaveCalendar extends Component {
       <div>
         <div className="leaveInfo">
           <Alert className="totalLeave" message="There are total 20 active leaves" type="info" />
-          <Button className="requestLeaveBtn" type="primary">Request leave</Button>
+          <Button className="requestLeaveBtn" type="primary"><Link to='/leaves/request'>Request leave</Link></Button>
         </div>
         <Calendar value={value} onSelect={this.onSelect} onPanelChange={this.onPanelChange} 
           dateCellRender={this.dateCellRender}  disabledDate={this.disabledDate} />

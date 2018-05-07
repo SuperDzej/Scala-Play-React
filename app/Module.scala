@@ -1,6 +1,6 @@
+import BLL.StartupService
 import com.google.inject.AbstractModule
 import play.api.{Configuration, Environment}
-
 import DAL.Repository._
 import DAL.Traits._
 
@@ -14,7 +14,8 @@ import DAL.Traits._
  * adding `play.modules.enabled` settings to the `application.conf`
  * configuration file.
  */
-class Module(environment: Environment, configuration: Configuration) extends AbstractModule {
+class Module(environment: Environment,
+             configuration: Configuration) extends AbstractModule {
 
   override def configure():Unit = {
 
@@ -29,5 +30,9 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
     bind(classOf[IUserProjectRepository]).to(classOf[UserProjectRepository])
     bind(classOf[IUserLeaveRepository]).to(classOf[UserLeaveRepository])
     bind(classOf[IProjectSkillRepository]).to(classOf[ProjectSkillRepository])
+    bind(classOf[IRoleRepository]).to(classOf[RoleRepository])
+    bind(classOf[IUserRoleRepository]).to(classOf[UserRoleRepository])
+
+    bind(classOf[StartupService]).asEagerSingleton()
   }
 }

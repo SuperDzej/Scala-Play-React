@@ -2,11 +2,14 @@ import React, {Component} from 'react';
 import { Layout } from 'antd';
 import UserList from '../UserList/UserList'
 import {
-  Route
+  Route,
+  Redirect,
+  Switch
 } from 'react-router-dom';
 import ProtectedHome from '../ProtectedHome/ProtectedHome';
 import UserDetail from '../UserDetail/UserDetail';
 import LeaveCalendar from '../LeaveCalendar/LeaveCalendar'
+import LeaveRequest from '../LeaveRequest/LeaveRequest'
 
 const { Content } = Layout;
 const { Footer } = Layout;
@@ -22,12 +25,21 @@ class PageContent extends Component {
       <Layout style={{ padding: '0 24px 24px' }}>
         <div style={{ 'marginTop': '10px' }}></div>
         <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
+          <Switch>
+            <Route path='/' exact component={ProtectedHome} />
 
-          <Route path='/' exact component={ProtectedHome} />
-          <Route path='/users' exact component={UserList} />
-          <Route path='/users/:id/:type' component={UserDetail} />
-          <Route path="/leaves" exact component={LeaveCalendar} />
-          <Route path='/profile' component={UserDetail} />
+            <Route path='/users' exact component={UserList} />
+            <Route path='/users/:id/:type' component={UserDetail} />
+            <Route path='/profile' component={UserDetail} />
+
+            <Route path='/leaves' exact component={LeaveCalendar} />
+            <Route path='/leaves/request' exact component={LeaveRequest} />
+            <Route path='/leaves/evaluate' exact component={LeaveCalendar} />
+
+            <Route path='/projects' exact component={LeaveCalendar} />
+            
+            <Redirect to='/404' />
+          </Switch>
         </Content>
         <Footer style={{ textAlign: 'center' }}>
           Ant Colony ©2018 Created by Ant Dzej

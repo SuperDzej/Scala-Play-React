@@ -1,0 +1,12 @@
+.fieldDescription {
+  font-size: 14px;
+  font-weight: 500;
+  margin-right: 10px;
+  width: 80px;
+}
+
+.divField {
+  display: flex;
+  justify-content: flex-start;
+  margin: 10px;
+}

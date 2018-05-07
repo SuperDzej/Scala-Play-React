@@ -4,17 +4,19 @@ import javax.inject._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-
 import BLL.Models.{OperationResult, _}
 import DAL.Models._
 import DAL.Traits._
 import BLL.Converters
+import BLL.Enums.RoleEnum
 
 class UserService @Inject()(private val userRepository: IUserRepository,
                             private val userDetailRepository: IUserDetailRepository,
                             private val userSkillRepository: IUserSkillRepository,
                             private val userLeaveRepository: IUserLeaveRepository,
                             private val userProjectRepository: IUserProjectRepository,
+                            private val userRoleRepository: IUserRoleRepository,
+                            private val roleRepository: IRoleRepository,
                             private val authService: AuthenticationService) {
   private val timeoutDuration = 2.seconds
 
@@ -28,15 +30,26 @@ class UserService @Inject()(private val userRepository: IUserRepository,
       if(addUserResultId > 0L) {
         val dbUserDetail = UserDetail(0L, description = "", country = "", religion = "", height = 0.0,
           weight= 0.0, skin = "", hair = "", gender = "", age = 0, userId = addUserResultId)
-        val addUserDetailF = userDetailRepository.create(dbUserDetail)
-        val addUserDetailId = Await.result(addUserDetailF, timeoutDuration).getOrElse(0L)
-        if (addUserDetailId > 0L) OperationResult[Long](isSuccess = true,
-          "User created", addUserResultId)
-        else OperationResult[Long](isSuccess = false,
-          "User not created", 0L)
+        val addUserDetailId = Await.result(userDetailRepository.create(dbUserDetail),
+          timeoutDuration).getOrElse(0L)
+
+        val role = Await.result(roleRepository.getByName(RoleEnum.Employee.toString),
+            timeoutDuration)
+        role match {
+          case Some(dbRole) =>
+            val userRoleId = Await.result(userRoleRepository
+              .create(UserRole(dbRole.id, addUserResultId)), timeoutDuration)
+
+            if (addUserDetailId > 0L && userRoleId > 0L) OperationResult[Long](isSuccess = true,
+              "User created", addUserResultId)
+            else OperationResult[Long](isSuccess = false,
+              "User not created, can not add user details", 0L)
+          case None => OperationResult[Long](isSuccess = false,
+            "User not created, can not find role", 0L)
+        }
       }
       else {
-        OperationResult[Long](isSuccess = false, "User not created", 0L)
+        OperationResult[Long](isSuccess = false, "User not created, try again later", 0L)
       }
     })
   }
@@ -45,9 +58,10 @@ class UserService @Inject()(private val userRepository: IUserRepository,
     val oUser = Await.result(userRepository.getById(userId), timeoutDuration)
 
     oUser match {
-      case Some(user) =>
+      case Some(_) =>
         val userSkills = userSkillModels.map(userSkill =>
-          UserSkill(skillId = userSkill.skillId, userId = userId, level = userSkill.level, yearsExperience = userSkill.yearsExperience))
+          UserSkill(skillId = userSkill.skillId, userId = userId,
+            level = userSkill.level, yearsExperience = userSkill.yearsExperience))
         val addUserSkillCount = Await.result(userSkillRepository.createMultiple(userSkills), timeoutDuration)
 
         if(addUserSkillCount <= 0) OperationResult[Int](isSuccess = false,

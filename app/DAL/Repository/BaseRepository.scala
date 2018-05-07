@@ -24,6 +24,8 @@ class BaseRepository () {
   val usersInterestingInfo = TableQuery[UserInterestingInfoTable]
   val leaveCategories = TableQuery[LeaveCategoryTable]
   val userProjects = TableQuery[UserProjectTable]
+  val roles = TableQuery[RoleTable]
+  val userRoles = TableQuery[UserRoleTable]
   
   def getDatabaseConnection: JdbcProfile#Backend#Database = {
     BaseRepository.db
