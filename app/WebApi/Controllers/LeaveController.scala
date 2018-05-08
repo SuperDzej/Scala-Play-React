@@ -7,16 +7,18 @@ import BLL.Models._
 import BLL.Services._
 import DAL.Repository.LeaveRepository
 import WebApi.Models.RestResponse
+import WebApi.Utilities.JWTAuthentication
 
 @Singleton
 class LeaveController @Inject()(cc: ControllerComponents,
+                                jwtAuthentication: JWTAuthentication,
                                 vacationService: LeaveService,
                                 vacationRepository: LeaveRepository)
   extends AbstractController(cc) {
 
   def get = Action {
     val leaves:Seq[LeaveModel] = vacationService.get
-    Ok(new RestResponse(Json.toJson(leaves), None).toJson)
+    Ok(RestResponse(Json.toJson(leaves), None).toJson)
   }
 
   def getById(id: Long) = Action {
@@ -27,7 +29,7 @@ class LeaveController @Inject()(cc: ControllerComponents,
     }
   }
 
-  def post: Action[JsValue] = Action(parse.json) { request =>
+  def post: Action[JsValue] = jwtAuthentication(parse.json) { request =>
     val validateVacationBody = request.body.validate[LeaveModel]
     if(validateVacationBody.isSuccess) {
       val leaveModel = request.body.as[LeaveModel]
@@ -38,6 +40,19 @@ class LeaveController @Inject()(cc: ControllerComponents,
     } else {
       BadRequest("Invalid data sent")
     }
+  }
+
+  def update(id: Long) = Action {
+    val leaveM: Option[LeaveModel] = vacationService.getById(id)
+    leaveM match {
+      case leave: Some[LeaveModel] => Ok(Json.toJson(leave))
+      case None => NotFound("No leave with id")
+    }
+  }
+
+  def getPending = Action {
+    val leaves:Seq[LeaveModel] = vacationService.getPending
+    Ok(RestResponse(Json.toJson(leaves), None).toJson)
   }
 
   def delete(id: Long) = Action {

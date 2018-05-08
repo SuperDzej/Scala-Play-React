@@ -59,15 +59,6 @@ POST        /api/projects                               WebApi.Controllers.Proje
 
 DELETE      /api/projects/:id                           WebApi.Controllers.ProjectController.delete(id: Long)
 
-# Leave related routes
-GET         /api/leaves                                 WebApi.Controllers.LeaveController.get
-
-GET         /api/leaves/:id                             WebApi.Controllers.LeaveController.getById(id: Long)
-
-POST        /api/leaves                                 WebApi.Controllers.LeaveController.post
-
-DELETE      /api/leaves/:id                             WebApi.Controllers.LeaveController.delete(id: Long)
-
 # Leave category routes
 GET         /api/leaves/categories                      WebApi.Controllers.LeaveCategoryController.get
 
@@ -76,6 +67,21 @@ GET         /api/leaves/categories/:id                  WebApi.Controllers.Leave
 POST        /api/leaves/categories                      WebApi.Controllers.LeaveCategoryController.post
 
 DELETE      /api/leaves/categories/:id                  WebApi.Controllers.LeaveCategoryController.delete(id: Long)
+
+# Leave related routes
+GET         /api/leaves                                 WebApi.Controllers.LeaveController.get
+
+GET         /api/leaves/pending                         WebApi.Controllers.LeaveController.getPending
+
+GET         /api/leaves/:id                             WebApi.Controllers.LeaveController.getById(id: Long)
+
+POST        /api/leaves                                 WebApi.Controllers.LeaveController.post
+
+PUT         /api/leaves/:id                             WebApi.Controllers.LeaveController.update(id: Long)
+
+DELETE      /api/leaves/:id                             WebApi.Controllers.LeaveController.delete(id: Long)
+
+
 
 # Serve static assets under public directory
 GET         /*file                                      WebApi.Controllers.FrontendController.assetOrDefault(file)

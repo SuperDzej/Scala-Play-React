@@ -10,6 +10,7 @@ import ProtectedHome from '../ProtectedHome/ProtectedHome';
 import UserDetail from '../UserDetail/UserDetail';
 import LeaveCalendar from '../LeaveCalendar/LeaveCalendar'
 import LeaveRequest from '../LeaveRequest/LeaveRequest'
+import LeaveEvaluate from '../LeaveEvaluate/LeaveEvaluate'
 
 const { Content } = Layout;
 const { Footer } = Layout;
@@ -34,7 +35,7 @@ class PageContent extends Component {
 
             <Route path='/leaves' exact component={LeaveCalendar} />
             <Route path='/leaves/request' exact component={LeaveRequest} />
-            <Route path='/leaves/evaluate' exact component={LeaveCalendar} />
+            <Route path='/leaves/evaluate' exact component={LeaveEvaluate} />
 
             <Route path='/projects' exact component={LeaveCalendar} />
             

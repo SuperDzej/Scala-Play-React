@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat
 
 import play.api.libs.json._
 
-case class LeaveModel(id: Option[Long], description: String, var category: String, startDate: Timestamp, endDate: Timestamp)
+case class LeaveModel(id: Option[Long], description: String, category: String,
+                      isApproved: Option[Boolean],
+                      startDate: Timestamp, endDate: Timestamp)
 
 object LeaveModel {
   implicit object timestampFormat extends Format[Timestamp] {
@@ -18,6 +20,7 @@ object LeaveModel {
 
     def writes(ts: Timestamp) = JsString(format.format(ts))
   }
+
   implicit val vacationsRead: Reads[LeaveModel] = Json.reads[LeaveModel]
   implicit val vacationsWrite: Writes[LeaveModel] = Json.writes[LeaveModel]
 }

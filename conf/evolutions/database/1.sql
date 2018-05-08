@@ -85,6 +85,7 @@ CREATE TABLE "leave" (
   "id" SERIAL PRIMARY KEY,
   "description" TEXT NOT NULL,
   "startDate" TIMESTAMP NOT NULL,
+  "isApproved" BOOLEAN NULL,
   "endDate" TIMESTAMP NULL,
   "categoryId" SERIAL REFERENCES "leave_category"(id)
 );

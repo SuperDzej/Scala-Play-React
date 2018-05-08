@@ -16,6 +16,8 @@ class UserDetail extends Component {
     }
 
     console.log(this.props.match.params.type)
+    this.editUser = this.editUser.bind(this)
+    this.deleteUser = this.deleteUser.bind(this)
   }
 
   getUserById() {
@@ -44,6 +46,10 @@ class UserDetail extends Component {
     console.log('Edit: ', e)
   }
 
+  editChange(event) {
+    console.log('Change ', event.target.value)
+  }
+
   changeResourceView() {
     var type = this.props.match.params.type
     var changeResource = null
@@ -60,15 +66,11 @@ class UserDetail extends Component {
       else if(type === 'edit') {
         this.setState({ readOnly: false })
         changeResource = <span>
-          <Button className="btnMargin10" type="default" onClick={this.editUser.bind(this)}>Edit</Button>
+          <Button className="btnMargin10" type="default" onClick={this.editUser}>Edit</Button>
         </span>
       }
     }
     this.setState({ changeResourceView: changeResource })
-  }
-
-  editChange(e) {
-    console.log(e)
   }
 
   async componentDidMount() {

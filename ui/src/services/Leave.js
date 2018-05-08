@@ -1,7 +1,11 @@
 import Client from "./Client";
 
 function get() {
-  return Client.get(`/api/leaves`);
+  return Client.get(`/api/leaves`)
+}
+
+function getPending() {
+  return Client.get(`/api/leaves/pending`)
 }
 
 function getById(id) {
@@ -16,5 +20,5 @@ function deleteResource(id) {
   return Client.deleteResource(`/api/leaves/${id}`)
 }
 
-const Leave = { get, getById, post , deleteResource};
+const Leave = { get, getPending, getById, post , deleteResource};
 export default Leave

@@ -47,6 +47,15 @@ class LeaveService @Inject()(private val leaveRepository: ILeaveRepository,
     }
   }
 
+  def getPending: Seq[LeaveModel] = {
+    val leaves = Await.result(leaveRepository.get, timeoutDuration)
+    leaves
+      .filter(leave => leave._1.isApproved.isEmpty)
+      .map(leaveWithCategory => {
+      Converters.leaveToLeaveModel(leaveWithCategory._1, leaveWithCategory._2.name)
+    })
+  }
+
   def get: Seq[LeaveModel] = {
     val leaves = Await.result(leaveRepository.get, timeoutDuration)
     leaves.map(leaveWithCategory => {

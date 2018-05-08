@@ -10,10 +10,11 @@ class LeaveTable(tag: Tag) extends Table[Leave](tag, "leave") {
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
   def description = column[String]("description")
   def startDate = column[Timestamp]("startDate")
+  def isApproved = column[Option[Boolean]]("isApproved")
   def endDate = column[Timestamp]("endDate")
   def categoryId = column[Long]("categoryId")
   def category = foreignKey("categoryId_fk", categoryId, leaveCategories)(_.id)
 
   override def * =
-    (id, description, categoryId, startDate, endDate) <>(Leave.tupled, Leave.unapply)
+    (id, description, isApproved, categoryId, startDate, endDate) <>(Leave.tupled, Leave.unapply)
 }

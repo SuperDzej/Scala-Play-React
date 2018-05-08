@@ -54,12 +54,12 @@ object Converters {
 
   def leaveToLeaveModel(leave: Leave, categoryName: String): LeaveModel = {
     LeaveModel(Some(leave.id), category = categoryName, description = leave.description,
-      startDate = leave.startDate, endDate = leave.endDate)
+      isApproved = leave.isApproved, startDate = leave.startDate, endDate = leave.endDate)
   }
 
   def leaveModelToLeave(leaveModel: LeaveModel, categoryId: Long): Leave = {
     Leave(leaveModel.id.getOrElse(0L), description = leaveModel.description, categoryId = categoryId,
-      startDate = leaveModel.startDate, endDate = leaveModel.endDate)
+      isApproved = leaveModel.isApproved, startDate = leaveModel.startDate, endDate = leaveModel.endDate)
   }
 
   def leaveCategoryToLeaveCategoryModel(leave: LeaveCategory): LeaveCategoryModel = {
@@ -74,7 +74,8 @@ object Converters {
     InterestingInfoModel(Some(interestingInfo.id), interestingInfo.name, interestingInfo.description, interestingInfo.url)
   }
 
-  def interestingInfoModelToInterestingInfo(interestingInfoModel: InterestingInfoModel, userId: Long) : UserInterestingInfo = {
+  def interestingInfoModelToInterestingInfo(interestingInfoModel: InterestingInfoModel,
+                                            userId: Long): UserInterestingInfo = {
     UserInterestingInfo(interestingInfoModel.id.getOrElse(0L), interestingInfoModel.name,
       interestingInfoModel.description, interestingInfoModel.url, userId)
   }

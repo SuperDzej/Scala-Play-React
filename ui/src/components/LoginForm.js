@@ -48,7 +48,6 @@ class NormalLoginForm extends Component {
 
       return (loginForm)
   }
-
 }
 
 const LoginForm = Form.create()(NormalLoginForm);

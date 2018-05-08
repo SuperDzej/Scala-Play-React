@@ -48,7 +48,16 @@ class LeaveCalendar extends Component {
       <div>
         <div className="leaveInfo">
           <Alert className="totalLeave" message="There are total 20 active leaves" type="info" />
-          <Button className="requestLeaveBtn" type="primary"><Link to='/leaves/request'>Request leave</Link></Button>
+          <span>
+            <div>
+              <Button className="requestLeaveBtn" type="primary">
+                <Link to='/leaves/request'>Request leave</Link>
+              </Button>
+            </div>
+            <Button type='primary'>
+              <Link to='/leaves/evaluate'>Evaluate leaves</Link>
+            </Button>
+          </span>
         </div>
         <Calendar value={value} onSelect={this.onSelect} onPanelChange={this.onPanelChange} 
           dateCellRender={this.dateCellRender}  disabledDate={this.disabledDate} />
