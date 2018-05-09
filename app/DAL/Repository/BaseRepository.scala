@@ -15,7 +15,6 @@ class BaseRepository () {
   // We get config by name from application.config where db url is specified
   val users = TableQuery[UserTable]
   val userSkills = TableQuery[UserSkillTable]
-  val userLeaves = TableQuery[UserLeaveTable]
   val leaves = TableQuery[LeaveTable]
   val projects = TableQuery[ProjectTable]
   val skills = TableQuery[SkillTable]

@@ -6,7 +6,6 @@ CREATE TABLE "user" (
   "first_name" TEXT NOT NULL,
   "last_name" TEXT NOT NULL,
   "email" VARCHAR(50) UNIQUE NOT NULL,
-  "username" VARCHAR(50) UNIQUE NOT NULL,
   "isVerified" BOOLEAN NOT NULL,
   "isDisabled" BOOLEAN NOT NULL,
   "password" TEXT NOT NULL
@@ -83,15 +82,12 @@ CREATE TABLE "leave_category" (
 
 CREATE TABLE "leave" (
   "id" SERIAL PRIMARY KEY,
-  "description" TEXT NOT NULL,
+  "reason" TEXT NOT NULL,
+  "status" VARCHAR(40) NOT NULL,
   "startDate" TIMESTAMP NOT NULL,
-  "isApproved" BOOLEAN NULL,
   "endDate" TIMESTAMP NULL,
-  "categoryId" SERIAL REFERENCES "leave_category"(id)
-);
-
-CREATE TABLE "user_leave" (
-  "leaveId" SERIAL REFERENCES "leave"(id),
+  "comment" TEXT NULL,
+  "categoryId" SERIAL REFERENCES "leave_category"(id),
   "userId" SERIAL REFERENCES "user"(id)
 );
 

@@ -28,7 +28,6 @@ class Module(environment: Environment,
 
     bind(classOf[IUserSkillRepository]).to(classOf[UserSkillRepository])
     bind(classOf[IUserProjectRepository]).to(classOf[UserProjectRepository])
-    bind(classOf[IUserLeaveRepository]).to(classOf[UserLeaveRepository])
     bind(classOf[IProjectSkillRepository]).to(classOf[ProjectSkillRepository])
     bind(classOf[IRoleRepository]).to(classOf[RoleRepository])
     bind(classOf[IUserRoleRepository]).to(classOf[UserRoleRepository])

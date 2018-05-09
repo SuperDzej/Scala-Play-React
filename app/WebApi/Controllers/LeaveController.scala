@@ -12,17 +12,17 @@ import WebApi.Utilities.JWTAuthentication
 @Singleton
 class LeaveController @Inject()(cc: ControllerComponents,
                                 jwtAuthentication: JWTAuthentication,
-                                vacationService: LeaveService,
+                                leaveService: LeaveService,
                                 vacationRepository: LeaveRepository)
   extends AbstractController(cc) {
 
   def get = Action {
-    val leaves:Seq[LeaveModel] = vacationService.get
+    val leaves:Seq[LeaveModel] = leaveService.get
     Ok(RestResponse(Json.toJson(leaves), None).toJson)
   }
 
   def getById(id: Long) = Action {
-    val leaveM: Option[LeaveModel] = vacationService.getById(id)
+    val leaveM: Option[LeaveModel] = leaveService.getById(id)
     leaveM match {
       case leave: Some[LeaveModel] => Ok(Json.toJson(leave))
       case None => NotFound("No leave with id")
@@ -33,7 +33,7 @@ class LeaveController @Inject()(cc: ControllerComponents,
     val validateVacationBody = request.body.validate[LeaveModel]
     if(validateVacationBody.isSuccess) {
       val leaveModel = request.body.as[LeaveModel]
-      val createLeaveResult = vacationService.create(leaveModel)
+      val createLeaveResult = leaveService.create(leaveModel)
 
       if(createLeaveResult.isSuccess) Created(Json.toJson(createLeaveResult.result))
       else BadRequest(createLeaveResult.message)
@@ -42,21 +42,28 @@ class LeaveController @Inject()(cc: ControllerComponents,
     }
   }
 
-  def update(id: Long) = Action {
-    val leaveM: Option[LeaveModel] = vacationService.getById(id)
-    leaveM match {
-      case leave: Some[LeaveModel] => Ok(Json.toJson(leave))
-      case None => NotFound("No leave with id")
+  def update(id: Long): Action[JsValue] = Action(parse.json) { request =>
+    val leaveBodyValidation = request.body.validate[LeaveModel]
+    if(leaveBodyValidation.isSuccess) {
+      val leaveFromBody = request.body.as[LeaveModel]
+
+      val updateResult: OperationResult[Option[LeaveModel]] =
+        leaveService.update(id, leaveFromBody)
+
+      if (updateResult.isSuccess) Ok(Json.toJson(updateResult.result))
+      else BadRequest(updateResult.message)
+    } else {
+      BadRequest("Invalid data sent")
     }
   }
 
   def getPending = Action {
-    val leaves:Seq[LeaveModel] = vacationService.getPending
+    val leaves:Seq[LeaveModel] = leaveService.getPending
     Ok(RestResponse(Json.toJson(leaves), None).toJson)
   }
 
   def delete(id: Long) = Action {
-    val deletedLeaveId: Int = vacationService.delete(id)
+    val deletedLeaveId: Int = leaveService.delete(id)
 
     if(deletedLeaveId == id) Ok("Leave deleted")
     else NotFound("No leave with id for deletion")

@@ -89,19 +89,21 @@ class LeaveRequest extends Component {
 
     return (
       <form>
-          <div className="divField">
-            <span className="fieldDescription">Pick date</span> 
+          <div className='divField'>
+            <span className='fieldDescription'>Pick date</span> 
             <RangePicker size={this.state.size} onCalendarChange={this.onCalendarChange.bind(this)} />
           </div>
-          <div className="divField">
-            <span className="fieldDescription">Type</span> 
+          <div className='divField'>
+            <span className='fieldDescription'>Type</span> 
             <DynamicSelect data={this.state.categories}  handleChange={this.handleTypeChange.bind(this)}/>
           </div>
-          <div className="divField">
-            <span className="fieldDescription">Reason</span> 
-            <Input placeholder="Enter leave reason" value={this.state.request.description} onChange={this.reasonChange.bind(this)} required />
+          <div className='divField'>
+            <span className='fieldDescription'>Reason</span> 
+            <Input className='reason' placeholder='Enter leave reason' value={this.state.request.description} onChange={this.reasonChange.bind(this)} required />
           </div>
-          <Button type="primary" onClick={this.handleSubmit}>Request</Button>
+          <div className='requestBtnDiv'>
+            <Button className='requestBtn' type='primary' onClick={this.handleSubmit}>Request</Button>
+          </div>
       </form>
 
     );

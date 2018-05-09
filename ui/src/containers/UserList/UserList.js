@@ -14,23 +14,22 @@ const columns = [{
   fixed: 'left'
 },{
   title: 'First Name',
-  dataIndex: 'firstName'
+  dataIndex: 'firstName',
+  width: 100
 }, {
   title: 'Last Name',
   dataIndex: 'lastName',
   key: 'lastName',
+  width: 100
 }, {
   title: 'Email',
   dataIndex: 'email',
-  key: 'email'
-}, {
-  title: 'Username',
-  dataIndex: 'username',
-  key: 'username'
+  key: 'email',
+  width: 100
 }, {
   title: 'Action',
-  width: 165,
   key: 'operation',
+  width: 180,
   render: (record) => {
       var userId = record.id
 
@@ -122,7 +121,7 @@ class UserList extends Component {
         pagination={this.state.pagination}
         loading={this.state.loading}
         onChange={this.handleTableChange.bind(this)}
-        scroll={{ x: 1300 }} />
+        scroll={{ x: 800 }} />
     )
   }
 }

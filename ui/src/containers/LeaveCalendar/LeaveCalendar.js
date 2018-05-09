@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Alert, Button } from 'antd';
+import { Calendar, Alert, Button, Row, Col } from 'antd';
 import moment from 'moment';
 
 import './LeaveCalendar.css'
@@ -30,7 +30,7 @@ class LeaveCalendar extends Component {
     // console.log(value)
     /*const listData = getListData(value);
     return (
-      <ul className="events">
+      <ul className='events'>
         {
           listData.map(item => (
             <li key={item.content}>
@@ -42,23 +42,31 @@ class LeaveCalendar extends Component {
     );*/
   }
 
+  componentDidMount() {
+
+  }
+
   render() {
     const { value } = this.state;
     return (
       <div>
-        <div className="leaveInfo">
-          <Alert className="totalLeave" message="There are total 20 active leaves" type="info" />
-          <span>
-            <div>
-              <Button className="requestLeaveBtn" type="primary">
+        <Row>
+          <Row className='totalLeave'>
+            <Alert message='There are total 20 active leaves' type='info' />
+          </Row>  
+          <Row>
+            <Col span={12}>
+              <Button className='requestLeaveBtn' type='primary'>
                 <Link to='/leaves/request'>Request leave</Link>
               </Button>
-            </div>
-            <Button type='primary'>
-              <Link to='/leaves/evaluate'>Evaluate leaves</Link>
-            </Button>
-          </span>
-        </div>
+            </Col>
+            <Col span={12}>
+              <Button type='primary'>
+                <Link to='/leaves/evaluate'>Evaluate leaves</Link>
+              </Button>
+            </Col>
+          </Row>
+        </Row>
         <Calendar value={value} onSelect={this.onSelect} onPanelChange={this.onPanelChange} 
           dateCellRender={this.dateCellRender}  disabledDate={this.disabledDate} />
       </div>

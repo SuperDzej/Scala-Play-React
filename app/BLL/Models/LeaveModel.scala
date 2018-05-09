@@ -5,9 +5,9 @@ import java.text.SimpleDateFormat
 
 import play.api.libs.json._
 
-case class LeaveModel(id: Option[Long], description: String, category: String,
-                      isApproved: Option[Boolean],
-                      startDate: Timestamp, endDate: Timestamp)
+case class LeaveModel(id: Option[Long], reason: String, var status: Option[String], startDate: Timestamp,
+                      endDate: Timestamp, evaluationComment: Option[String],
+                      category: Option[LeaveCategoryModel], user: Option[UserModel])
 
 object LeaveModel {
   implicit object timestampFormat extends Format[Timestamp] {

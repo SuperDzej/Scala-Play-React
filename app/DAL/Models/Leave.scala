@@ -2,5 +2,6 @@ package DAL.Models
 
 import java.sql.Timestamp
 
-case class Leave(id: Long, description: String, isApproved: Option[Boolean],
-                 categoryId: Long, startDate: Timestamp, endDate: Timestamp)
+case class Leave(id: Long, reason: String, status: String, startDate: Timestamp,
+                 endDate: Timestamp, evaluationComment: Option[String],
+                 categoryId: Long, userId: Long)

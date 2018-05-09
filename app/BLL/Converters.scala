@@ -1,5 +1,6 @@
 package BLL
 
+import BLL.Enums.LeaveStatusEnum
 import BLL.Models._
 import DAL.Models._
 
@@ -52,14 +53,17 @@ object Converters {
     Skill(skillModel.id.getOrElse(0L), name = skillModel.name, description = skillModel.description)
   }
 
-  def leaveToLeaveModel(leave: Leave, categoryName: String): LeaveModel = {
-    LeaveModel(Some(leave.id), category = categoryName, description = leave.description,
-      isApproved = leave.isApproved, startDate = leave.startDate, endDate = leave.endDate)
+  def leaveToLeaveModel(leave: Leave, category: Option[LeaveCategoryModel],
+                        user: Option[UserModel]): LeaveModel = {
+    LeaveModel(Some(leave.id), category = category, reason = leave.reason, user = user,
+      status = Some(leave.status), evaluationComment = leave.evaluationComment, startDate = leave.startDate, endDate = leave.endDate)
   }
 
-  def leaveModelToLeave(leaveModel: LeaveModel, categoryId: Long): Leave = {
-    Leave(leaveModel.id.getOrElse(0L), description = leaveModel.description, categoryId = categoryId,
-      isApproved = leaveModel.isApproved, startDate = leaveModel.startDate, endDate = leaveModel.endDate)
+  def leaveModelToLeave(leaveModel: LeaveModel, categoryId: Long, userId: Long): Leave = {
+    Leave(leaveModel.id.getOrElse(0L), reason = leaveModel.reason, categoryId = categoryId,
+      userId = userId, status = leaveModel.status.getOrElse(LeaveStatusEnum.Pending.toString),
+      evaluationComment = leaveModel.evaluationComment, startDate = leaveModel.startDate,
+      endDate = leaveModel.endDate)
   }
 
   def leaveCategoryToLeaveCategoryModel(leave: LeaveCategory): LeaveCategoryModel = {

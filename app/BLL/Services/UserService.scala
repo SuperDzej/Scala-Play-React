@@ -13,10 +13,10 @@ import BLL.Enums.RoleEnum
 class UserService @Inject()(private val userRepository: IUserRepository,
                             private val userDetailRepository: IUserDetailRepository,
                             private val userSkillRepository: IUserSkillRepository,
-                            private val userLeaveRepository: IUserLeaveRepository,
                             private val userProjectRepository: IUserProjectRepository,
                             private val userRoleRepository: IUserRoleRepository,
                             private val roleRepository: IRoleRepository,
+                            private val leaveRepository: ILeaveRepository,
                             private val authService: AuthenticationService) {
   private val timeoutDuration = 2.seconds
 
@@ -73,13 +73,13 @@ class UserService @Inject()(private val userRepository: IUserRepository,
     }
   }
 
-  def addLeaves(userId: Long, leaves: Seq[Long]): OperationResult[Int] = {
+  /*def addLeaves(userId: Long, leaves: Seq[Long]): OperationResult[Int] = {
     val oUser = Await.result(userRepository.getById(userId), timeoutDuration)
 
     oUser match {
-      case Some(user) =>
+      case Some(_) =>
         val userLeaves = leaves.map(leaveId => UserLeave(leaveId = leaveId, userId = userId))
-        val addUserLeaveCount = Await.result(userLeaveRepository.createMultiple(userLeaves), timeoutDuration)
+        val addUserLeaveCount = Await.result(leaveRepository.createMultiple(userLeaves), timeoutDuration)
         if(addUserLeaveCount <= 0) OperationResult[Int](isSuccess = false,
           "No user leaves added", 0)
         else OperationResult[Int](isSuccess = true,
@@ -87,13 +87,13 @@ class UserService @Inject()(private val userRepository: IUserRepository,
       case None => OperationResult[Int](isSuccess = false,
         "No user with specified id", 0)
     }
-  }
+  }*/
 
   def addProjects(userId: Long, projects: Seq[Long]): OperationResult[Int] = {
     val oUser = Await.result(userRepository.getById(userId), timeoutDuration)
 
     oUser match {
-      case Some(user) =>
+      case Some(_) =>
         val userProjects = projects.map(projectId => UserProject(projectId = projectId, userId = userId))
         val addUserProjectCount = Await.result(userProjectRepository.createMultiple(userProjects), timeoutDuration)
         if(addUserProjectCount <= 0) OperationResult[Int](isSuccess = false,
@@ -106,7 +106,7 @@ class UserService @Inject()(private val userRepository: IUserRepository,
   }
 
   def updateDetails(userId: Long, userDetail: UserDetailModel):
-    OperationResult[Option[UserDetailModel]] = {
+      OperationResult[Option[UserDetailModel]] = {
     userDetail.userId = Some(userId)
     val dbUserDetail = Converters.userDetailModelToUserDetail(userDetail)
 
@@ -115,7 +115,7 @@ class UserService @Inject()(private val userRepository: IUserRepository,
     updateUserResult match {
       case Some(updatedUserDetail) =>
         val userDetail = Some(Converters.userDetailToUserDetailModel(updatedUserDetail, Some(updatedUserDetail.userId)))
-        OperationResult[Option[UserDetailModel]](isSuccess = true, "User detail updated", userDetail)
+          OperationResult[Option[UserDetailModel]](isSuccess = true, "User detail updated", userDetail)
       case None => OperationResult[Option[UserDetailModel]](isSuccess = false, "User not updated", None)
     }
   }
@@ -143,9 +143,13 @@ class UserService @Inject()(private val userRepository: IUserRepository,
                 Converters.projectToProjectModel(projectWithSkills._1, Some(projectSkills))
               })
 
-            val leaves = Await.result(userLeaveRepository.getLeavesByUserId(dbUser.id), timeoutDuration)
-              .map(leaveWithCategoryTuple => Converters.leaveToLeaveModel(leave = leaveWithCategoryTuple._1,
-                categoryName = leaveWithCategoryTuple._2.name))
+            val leaves = Await.result(leaveRepository.getByUserId(dbUser.id), timeoutDuration)
+              .map(leaveWithCategoryTuple => {
+                val categoryModel = Converters.leaveCategoryToLeaveCategoryModel(leaveWithCategoryTuple._2)
+                Converters.leaveToLeaveModel(leave = leaveWithCategoryTuple._1,
+                  category = Some(categoryModel), None)
+
+              })
 
             val userDetail = Some(Converters.userDetailToUserDetailModel(uDetail, None))
             Some(Converters.userToUserModel(dbUser, userDetail, Some(skills), Some(projects), Some(leaves)))
