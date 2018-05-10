@@ -14,3 +14,13 @@
   font-size: 15px;
   font-weight: 500;
 }
+
+.flexCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.leavesEvaluatedP {
+  font-size: 24px;
+  font-weight: 500;
+}

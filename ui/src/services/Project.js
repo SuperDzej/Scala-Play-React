@@ -1,4 +1,4 @@
-import Client from "./Client";
+import Client from './Client';
 
 function get() {
   return Client.get(`/api/projects`);

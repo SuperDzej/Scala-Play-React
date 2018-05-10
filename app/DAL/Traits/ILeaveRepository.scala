@@ -15,5 +15,7 @@ trait ILeaveRepository {
 
   def getByUserId(userId: Long): Future[Seq[(Leave, LeaveCategory)]]
 
+  def getTotalByStatus(oStatus: Option[String]): Future[Int]
+
   def get: Future[Seq[(Leave, LeaveCategory, User)]]
 }

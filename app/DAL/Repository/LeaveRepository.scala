@@ -46,6 +46,13 @@ class LeaveRepository @Inject()()
     runCommand(leaves.filter(_.id === id).result).map(_.headOption)
   }
 
+  def getTotalByStatus(oStatus: Option[String]): Future[Int] = {
+    val command = oStatus.fold(leaves.length.result)(status => {
+      leaves.filter(_.status === status).length.result
+    })
+    runCommand(command)
+  }
+
   def getByUserId(userId: Long): Future[Seq[(Leave, LeaveCategory)]] = {
     val innerJoin = (for {
       (c, s) <- leaves join leaveCategories on (_.categoryId === _.id)

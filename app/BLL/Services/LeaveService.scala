@@ -104,4 +104,8 @@ class LeaveService @Inject()(private val leaveRepository: ILeaveRepository,
       Converters.leaveToLeaveModel(leaveWithCategoryAndUser._1, Some(leaveCategoryModel), Some(userModel))
     })
   }
+
+  def getTotalPending: Int = {
+    Await.result(leaveRepository.getTotalByStatus(Some(LeaveStatusEnum.Pending.toString)), timeoutDuration)
+  }
 }

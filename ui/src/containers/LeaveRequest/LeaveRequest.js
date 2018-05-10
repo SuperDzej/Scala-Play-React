@@ -1,12 +1,14 @@
 import React, {Component} from 'react'
-import { message, DatePicker, Input, Button } from 'antd';
+import { message, DatePicker, Input, Button } from 'antd'
+import moment from 'moment'
 
 import LeaveCategory from '../../services/LeaveCategory'
 import Leave from '../../services/Leave'
-import User from '../../services/User'
 import DynamicSelect from '../../components/DynamicSelect'
 
 import './LeaveRequest.css'
+import LocalStorage from '../../utils/LocalStorageUtil';
+import UserAuth from '../../services/UserAuth';
 
 const { RangePicker } = DatePicker
 
@@ -24,11 +26,25 @@ class LeaveRequest extends Component {
     size: 'default',
     categories: [],
     request: {
-      category: '',
-      description: '',
+      category: {
+        id: 0,
+        name: ''
+      },
+      user: {
+        id: 0,
+        firstName: '',
+        lastName: '',
+        email: ''
+      },
+      reason: '',
       startDate: '',
       endDate:''
     }
+  }
+
+  disabledDate(current) {
+    // Can not select days before today and today
+    return current && current < moment().endOf('day');
   }
 
   onCalendarChange(value) {
@@ -42,20 +58,24 @@ class LeaveRequest extends Component {
 
   handleTypeChange(categoryTypeId) {
     var request = {...this.state.request}
-    request.category = `${categoryTypeId}`;
+    request.category.id = categoryTypeId;
+    request.user = LocalStorage.getItem(UserAuth.userInfoKey)
     this.setState({request})
   }
 
   reasonChange(event) {
     var request = {...this.state.request}
-    request.description = event.target.value
+    request.reason = event.target.value
     this.setState({ request })
   }
 
   checkSubmit(obj) {
     for (var key in obj) {
-      if (obj[key] === null || obj[key] === '')
-          return false;
+      if (obj[key] === null || obj[key] === '') {
+        console.log(key + obj[key])
+        return false;
+      }
+          
     }
 
     return true;
@@ -65,17 +85,19 @@ class LeaveRequest extends Component {
     var isValid = this.checkSubmit(this.state.request)
     if(isValid) {
       Leave.post(this.state.request)
-      .then((response) => {
-        console.log(response)
-        User.postLeaves(null, [response])
-          .then((response) => {
-            message.success('Leave successfully requested')
-          }) 
-      })
+        .then((response) => {
+          console.log(response)
+          message.success('Leave successfully requested')
+          setTimeout(() => window.location.href = '/leaves' , 2000)
+        })
+        .catch((err) => {
+          message.err(err.response)
+        })
     } else {
       message.error('Please fill all fields');
     }
   }
+
 
   componentDidMount() {
     LeaveCategory.get()
@@ -91,7 +113,9 @@ class LeaveRequest extends Component {
       <form>
           <div className='divField'>
             <span className='fieldDescription'>Pick date</span> 
-            <RangePicker size={this.state.size} onCalendarChange={this.onCalendarChange.bind(this)} />
+            <RangePicker size={this.state.size} 
+              onCalendarChange={this.onCalendarChange.bind(this)}
+              disabledDate={this.disabledDate.bind(this)} />
           </div>
           <div className='divField'>
             <span className='fieldDescription'>Type</span> 
@@ -99,7 +123,7 @@ class LeaveRequest extends Component {
           </div>
           <div className='divField'>
             <span className='fieldDescription'>Reason</span> 
-            <Input className='reason' placeholder='Enter leave reason' value={this.state.request.description} onChange={this.reasonChange.bind(this)} required />
+            <Input className='reason' placeholder='Enter leave reason' value={this.state.request.reason} onChange={this.reasonChange.bind(this)} required />
           </div>
           <div className='requestBtnDiv'>
             <Button className='requestBtn' type='primary' onClick={this.handleSubmit}>Request</Button>

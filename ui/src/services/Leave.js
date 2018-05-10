@@ -8,6 +8,10 @@ function getPending() {
   return Client.get(`/api/leaves/pending`)
 }
 
+function getTotalPending() {
+  return Client.get(`/api/leaves/total/pending`)
+}
+
 function getById(id) {
   return Client.get(`/api/leaves/${id}`)
 }
@@ -24,5 +28,11 @@ function deleteResource(id) {
   return Client.deleteResource(`/api/leaves/${id}`)
 }
 
-const Leave = { get, getPending, getById, post, update, deleteResource};
+const status = {
+  'Approved': 'Approved',
+  'Pending': 'Pending',
+  'Rejected': 'Rejected'
+}
+
+const Leave = { get, getPending, getById, getTotalPending, post, update, deleteResource, status };
 export default Leave

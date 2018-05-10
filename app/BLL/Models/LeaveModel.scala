@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat
 
 import play.api.libs.json._
 
-case class LeaveModel(id: Option[Long], reason: String, var status: Option[String], startDate: Timestamp,
-                      endDate: Timestamp, evaluationComment: Option[String],
+case class LeaveModel(id: Option[Long], reason: String, startDate: Timestamp, endDate: Timestamp,
+                      var status: Option[String], evaluationComment: Option[String],
                       category: Option[LeaveCategoryModel], user: Option[UserModel])
 
 object LeaveModel {
@@ -21,6 +21,11 @@ object LeaveModel {
     def writes(ts: Timestamp) = JsString(format.format(ts))
   }
 
+  // Need this because Leave Model has reference on user model and NPE error can be caused because UserModel read and writes are not bootstraped on time
+  implicit val userModelWrites: Writes[UserModel] = Json.writes[UserModel]
+  implicit val userModelReads: Reads[UserModel] = Json.reads[UserModel]
+
+  implicit val leavesFormat: Format[LeaveModel] = Json.format[LeaveModel]
   implicit val vacationsRead: Reads[LeaveModel] = Json.reads[LeaveModel]
   implicit val vacationsWrite: Writes[LeaveModel] = Json.writes[LeaveModel]
 }

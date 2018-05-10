@@ -73,22 +73,6 @@ class UserService @Inject()(private val userRepository: IUserRepository,
     }
   }
 
-  /*def addLeaves(userId: Long, leaves: Seq[Long]): OperationResult[Int] = {
-    val oUser = Await.result(userRepository.getById(userId), timeoutDuration)
-
-    oUser match {
-      case Some(_) =>
-        val userLeaves = leaves.map(leaveId => UserLeave(leaveId = leaveId, userId = userId))
-        val addUserLeaveCount = Await.result(leaveRepository.createMultiple(userLeaves), timeoutDuration)
-        if(addUserLeaveCount <= 0) OperationResult[Int](isSuccess = false,
-          "No user leaves added", 0)
-        else OperationResult[Int](isSuccess = true,
-          "User leaves added", addUserLeaveCount)
-      case None => OperationResult[Int](isSuccess = false,
-        "No user with specified id", 0)
-    }
-  }*/
-
   def addProjects(userId: Long, projects: Seq[Long]): OperationResult[Int] = {
     val oUser = Await.result(userRepository.getById(userId), timeoutDuration)
 

@@ -9,11 +9,11 @@ object Converters {
                       skills: Option[Seq[SkillModel]], projects: Option[Seq[ProjectModel]],
                       leaves: Option[Seq[LeaveModel]]): UserModel = {
     UserModel(Some(user.id), user.firstName, user.lastName,
-      user.email, user.username, None, userDetailM, skills = skills, projects = projects, leaves = leaves)
+      user.email, None, userDetailM, skills = skills, projects = projects, leaves = leaves)
   }
 
   def userModelToUser(userModel: UserModel, password: String): User = {
-    User(userModel.id.getOrElse(0L), userModel.firstName, userModel.lastName, userModel.email, userModel.username,
+    User(userModel.id.getOrElse(0L), userModel.firstName, userModel.lastName, userModel.email,
       isVerified = false, isDisabled = false, password)
   }
 

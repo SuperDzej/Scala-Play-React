@@ -24,8 +24,8 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
 
   def update(user: User) : Future[Option[User]] = {
     val mapUpdateAction = users.filter(_.id === user.id)
-      .map(dbUser => (dbUser.firstName, dbUser.lastName, dbUser.username, dbUser.isVerified, dbUser.isDisabled))
-      .update( (user.firstName, user.lastName, user.username, user.isVerified, user.isDisabled))
+      .map(dbUser => (dbUser.firstName, dbUser.lastName, dbUser.isVerified, dbUser.isDisabled))
+      .update( (user.firstName, user.lastName, user.isVerified, user.isDisabled))
 
     runCommand(mapUpdateAction)
       .map(updateCount => {

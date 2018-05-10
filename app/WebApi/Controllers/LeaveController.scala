@@ -29,8 +29,14 @@ class LeaveController @Inject()(cc: ControllerComponents,
     }
   }
 
+  def getTotalPending = Action {
+    Ok(leaveService.getTotalPending.toString)
+  }
+
+
   def post: Action[JsValue] = jwtAuthentication(parse.json) { request =>
     val validateVacationBody = request.body.validate[LeaveModel]
+
     if(validateVacationBody.isSuccess) {
       val leaveModel = request.body.as[LeaveModel]
       val createLeaveResult = leaveService.create(leaveModel)

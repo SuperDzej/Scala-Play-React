@@ -20,8 +20,6 @@ DELETE      /api/users/:id                              WebApi.Controllers.UserC
 
 PUT         /api/users/:id/details                      WebApi.Controllers.UserController.updateDetails(id: Long)
 
-POST        /api/users/:id/leaves                       WebApi.Controllers.UserController.addLeaves(id: Long)
-
 POST        /api/users/:id/skills                       WebApi.Controllers.UserController.addSkills(id: Long)
 
 POST        /api/users/:id/projects                     WebApi.Controllers.UserController.addProjects(id: Long)
@@ -70,6 +68,8 @@ DELETE      /api/leaves/categories/:id                  WebApi.Controllers.Leave
 
 # Leave related routes
 GET         /api/leaves                                 WebApi.Controllers.LeaveController.get
+
+GET         /api/leaves/total/pending                   WebApi.Controllers.LeaveController.getTotalPending
 
 GET         /api/leaves/pending                         WebApi.Controllers.LeaveController.getPending
 
