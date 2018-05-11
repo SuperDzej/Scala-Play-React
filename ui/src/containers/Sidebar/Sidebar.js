@@ -21,7 +21,7 @@ class Sidebar extends Component {
     collapsed: false
   };
 
-  getSelectedMenyKeys() {
+  getSelectedMenuKeys() {
     return Object.keys(this.urlToSelectedMenuMapping)
       .filter((prop) => {
         if(~window.location.pathname.indexOf(prop)) {
@@ -33,7 +33,7 @@ class Sidebar extends Component {
   }
 
   componentDidMount() {
-    var selectedMenuKeys = this.getSelectedMenyKeys()
+    var selectedMenuKeys = this.getSelectedMenuKeys()
     this.setState({ selectedMenuKeys : selectedMenuKeys.length > 0 ? selectedMenuKeys : [this.urlToSelectedMenuMapping['/users']] })
   }
 
@@ -54,7 +54,9 @@ class Sidebar extends Component {
           collapsed={this.state.collapsed}
           onCollapse={this.onCollapse}
         >
-          <Menu theme="dark" onClick={this.menuClick} selectedKeys={ this.state.selectedMenuKeys } 
+          <Menu theme="dark" 
+            onClick={this.menuClick} 
+            selectedKeys={ this.state.selectedMenuKeys } 
             mode="inline">
             <Menu.Item key="15">
                 <Link to="/users">            

@@ -14,16 +14,26 @@ class DetailView extends Component {
     return textWithUpper
   }
 
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps, this.props.data, this.props.readOnly)
+    // You don't have to do this check first, but it can help prevent an unneeded render
+    this.getFieldsView(this.props.data)
+  }
+
   fields = []
   topObjects = []
 
   // I go trough all objects recursively and get main fields in topObjects array to display them before fields of that object
   eachRecursive(obj)
   {
-      for (var prop in obj)
+      Object.keys(obj).forEach((prop, index) =>
       {
+          if(prop === 'id') {
+            return null
+          }
+          
           // To avoid duplicate keys
-          var random = Random.get(10000)
+          var random = Random.get(10000), random1 = Random.get(100000)
           if (typeof obj[prop] === "object" && obj[prop] !== null) {
             // To avoid adding array index in here      
             var hasElements = Object.keys(obj[prop]).length > 0 || 
@@ -34,7 +44,7 @@ class DetailView extends Component {
               this.topObjects.push(prop) 
 
               var topObject = this.topObjects[this.topObjects.length - 1]
-              var topObjectView = (<div className='objectDescription' key={topObject + random}> 
+              var topObjectView = (<div className='objectDescription' key={random1 + topObject + random}> 
                   {this.getFieldDescription(topObject)}
                 </div>)
               this.fields.push(topObjectView)
@@ -43,16 +53,20 @@ class DetailView extends Component {
             this.eachRecursive(obj[prop])
           }
           else {
-            console.log(this.props.readOnly)
+            console.log('R: ', this.props.readOnly, prop)
             var value = 
               <p key={this.topObjects.length + prop + obj[prop] + random} className='detailFieldP'> 
                 <span className='fieldDescription'>{this.getFieldDescription(prop)}: </span> 
-                <Input placeholder="Basic usage" value={obj[prop]} readOnly={this.props.readOnly} onChange={this.props.editField} />
+                <Input placeholder="Basic usage" 
+                  value={obj[prop]} 
+                  readOnly={this.props.readOnly} 
+                  onChange={(event) => this.props.editField(event, obj, prop)} />
               </p>
 
             this.fields.push(value)
           }
-      }
+      })
+    
   }
 
   getFieldsView(data) {
@@ -63,8 +77,6 @@ class DetailView extends Component {
     if(Object.keys(this.props.data).length < 1) {
       return ('Waiting for data')
     }
-
-    this.getFieldsView(this.props.data)
 
     return (
       <div>

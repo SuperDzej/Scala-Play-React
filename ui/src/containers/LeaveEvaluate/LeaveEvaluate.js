@@ -3,7 +3,7 @@ import { Row, message } from 'antd'
 
 import Leave from '../../services/Leave'
 
-import LeaveEvaluateColumn from '../../components/LeaveEvaluateColumn/LeaveEvaluateColumn'
+import LeaveEvaluateCol from '../../components/LeaveEvaluateCol/LeaveEvaluateCol'
 
 import './LeaveEvaluate.css'
 
@@ -81,13 +81,15 @@ class LeaveEvaluate extends Component {
   
   render() {
     var leaveColViews = this.state.pendingLeaves.map((leave, index) => {
-      return (<LeaveEvaluateColumn key={leave.id}
-        approveLeave={this.approveLeave}
-        rejectLeave={this.rejectLeave}
-        leave={leave}
-        index={index}
-        pendingLeaves={this.state.pendingLeaves}
-        handleEvaluationComment={this.handleEvaluationComment} />)
+      return (
+        <LeaveEvaluateCol key={leave.id}
+          approveLeave={this.approveLeave}
+          rejectLeave={this.rejectLeave}
+          leave={leave}
+          index={index}
+          span={12}
+          pendingLeaves={this.state.pendingLeaves}
+          handleEvaluationComment={this.handleEvaluationComment} />)
     })
 
     if(this.state.recievedLeaves && 

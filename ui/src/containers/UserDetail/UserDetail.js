@@ -18,13 +18,14 @@ class UserDetail extends Component {
     console.log(this.props.match.params.type)
     this.editUser = this.editUser.bind(this)
     this.deleteUser = this.deleteUser.bind(this)
+    this.editChange = this.editChange.bind(this)
+    this.cancelDelete = this.cancelDelete.bind(this)
   }
 
   getUserById() {
     var userId = this.props.match.params.id
     UserService.getById(userId)
       .then((response) => {
-        console.log('User: ', response)
         this.setState({ user: response })
         this.changeResourceView()
       })
@@ -46,8 +47,10 @@ class UserDetail extends Component {
     console.log('Edit: ', e)
   }
 
-  editChange(event) {
-    console.log('Change ', event.target.value)
+  editChange(event, obj, prop) {
+    var user = this.state.user
+    var object = Object.keys(user).filter((key, index) => prop === key)
+    console.log('Change ', event.target.value, obj, prop, object)
   }
 
   changeResourceView() {
@@ -57,10 +60,10 @@ class UserDetail extends Component {
       if(type === 'delete') {
         changeResource = 
           <span>
-              <Popconfirm title="Are you sure you want to delete this user?" onConfirm={this.deleteUser} 
-                onCancel={this.cancelDelete} okText="Yes" cancelText="No">
-                <Button className="btnMargin10" type="danger">Delete</Button>
-              </Popconfirm>
+            <Popconfirm title="Are you sure you want to delete this user?" onConfirm={this.deleteUser} 
+              onCancel={this.cancelDelete} okText="Yes" cancelText="No">
+              <Button className="btnMargin10" type="danger">Delete</Button>
+            </Popconfirm>
           </span>
       }
       else if(type === 'edit') {
