@@ -19,7 +19,7 @@ class AuthenticationService @Inject()(ussr: IUserRepository) {
     val userF: Future[Option[User]] = userRepository.getByEmail(email)
     val user: Option[User] = Await.result(userF, timeoutDuration)
     user match  {
-      case Some(dbUser) => validatePassword(password, dbUser.password)
+      case Some(dbUser) => validatePassword(password, dbUser.password.getOrElse(""))
       case None => false
     }
   }

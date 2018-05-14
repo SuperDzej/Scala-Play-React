@@ -1,6 +1,4 @@
 import React, {Component} from 'react'
-import moment from 'moment'
-
 import {Link} from 'react-router-dom'
 
 import {Row, Col, Tag} from 'antd'
@@ -15,7 +13,7 @@ class ProjectCol extends Component {
   render() {
     var project = this.props.project
     return (
-      <Col span={this.props.span} key={project.id}>
+      <Col>
         <Row className="card-box">
           <Col>
             <img className='projectImg' 
@@ -32,11 +30,11 @@ class ProjectCol extends Component {
             <Link to={project.url}>{project.url}</Link>
           </Col>
           <Col span={12}>
-            <span className='fieldDesc'> From: </span>
+            <span className='fieldDesc'>From: </span>
             <span>{this.props.getDateFormat(project.startDate)}</span>
           </Col>
           <Col span={12}>
-            <span className='fieldDesc'> To: </span>
+            <span className='fieldDesc'>To: </span>
             <span>{this.props.getDateFormat(project.endDate)}</span>
           </Col>
         </Row>

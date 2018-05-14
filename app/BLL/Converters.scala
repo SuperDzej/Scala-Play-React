@@ -5,16 +5,19 @@ import BLL.Models._
 import DAL.Models._
 
 object Converters {
-  def userToUserModel(user: User, userDetailM: Option[UserDetailModel],
-                      skills: Option[Seq[SkillModel]], projects: Option[Seq[ProjectModel]],
+  def userToUserModel(user: User,
+                      userDetailM: Option[UserDetailModel],
+                      skills: Option[Seq[SkillModel]],
+                      projects: Option[Seq[ProjectModel]],
                       leaves: Option[Seq[LeaveModel]]): UserModel = {
-    UserModel(Some(user.id), user.firstName, user.lastName,
-      user.email, None, userDetailM, skills = skills, projects = projects, leaves = leaves)
+    UserModel(Some(user.id),
+      user.firstName, user.lastName, user.email, None, userDetailM,
+      skills = skills, projects = projects, leaves = leaves)
   }
 
   def userModelToUser(userModel: UserModel, password: String): User = {
     User(userModel.id.getOrElse(0L), userModel.firstName, userModel.lastName, userModel.email,
-      isVerified = false, isDisabled = false, password)
+      isVerified = false, isDisabled = false, Some[String](password))
   }
 
   def userDetailToUserDetailModel(userDetail: UserDetail, userId: Option[Long]): UserDetailModel = {

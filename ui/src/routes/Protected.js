@@ -13,6 +13,7 @@ import LeaveCalendar from '../containers/LeaveCalendar/LeaveCalendar'
 import LeaveRequest from '../containers/LeaveRequest/LeaveRequest'
 import LeaveEvaluate from '../containers/LeaveEvaluate/LeaveEvaluate'
 import ProjectList from '../containers/ProjectList/ProjectList'
+import ProjectCreate from '../containers/ProjectCreate/ProjectCreate';
 
 class Protected extends Component {
   render() {
@@ -29,6 +30,7 @@ class Protected extends Component {
       <Route path='/leaves/evaluate' exact component={LeaveEvaluate} />
 
       <Route path='/projects' exact component={ProjectList} />
+      <Route path='/projects/create' exact component={ProjectCreate} />
       <Route path='/projects/:id' exact component={ProjectList} />
       <Redirect to='/404' />
     </Switch>)

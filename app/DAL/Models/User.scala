@@ -1,7 +1,16 @@
 package DAL.Models
 
-case class User(var id: Long, firstName: String, lastName: String, email: String,
-                isVerified: Boolean, isDisabled: Boolean, password: String)
+import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
+import com.mohiva.play.silhouette.api.util.PasswordInfo
+
+case class User(id: Long,
+                firstName: String,
+                lastName: String,
+                email: String,
+                isVerified: Boolean,
+                isDisabled: Boolean,
+                // loginInfo: LoginInfo,
+                password: Option[String]) extends Identity
 
 /*
 class User(_name: String, _duration: String, _octave: Int) extends Serializable {
