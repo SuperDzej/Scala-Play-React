@@ -3,7 +3,8 @@ import Client from "./Client";
 function getToken(email, password) {
   var data = {
     email: email,
-    password: password
+    password: password,
+    rememberMe: false
   }
   
   return Client.post('/token', data);

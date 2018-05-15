@@ -14,7 +14,7 @@ class UserRepository @Inject()() extends BaseRepository() with IUserRepository {
     runCommand(userIdQuery).map(userId => {
       userId
     }).recover {
-        case _: Exception => 0L
+        case ex: Exception => println(ex); 0L
       }
   }
 

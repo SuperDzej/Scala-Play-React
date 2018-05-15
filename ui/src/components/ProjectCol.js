@@ -11,14 +11,18 @@ class ProjectCol extends Component {
   }
 
   render() {
-    var project = this.props.project
+    var { project } = this.props
     return (
       <Col>
         <Row className="card-box">
           <Col>
+            <h3>{project.name}</h3>
+          </Col>
+          <Col>
             <img className='projectImg' 
               src='https://newsignature.com/wp-content/uploads/2017/02/project-management-1024x512.png' alt='Project' />
           </Col>
+
           <Col className='marginTB20'>
             {this.getSkillTagsView(project.skills)}
           </Col>
